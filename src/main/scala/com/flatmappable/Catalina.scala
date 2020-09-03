@@ -146,7 +146,7 @@ object Catalina {
           val pm = MsgPackProtocolDecoder.getDecoder.decode(bytes)
 
           logger.info("Response Status: " + resp.getStatusLine.getStatusCode.toString)
-          logger.info("Response Headers: " + resp.getAllHeaders.toList.toString())
+          logger.info("Response Headers: " + resp.getAllHeaders.toList.mkString(", "))
           logger.info("Response BodyHex: " + Hex.encodeHexString(bytes))
           logger.info("Response Body: " + pm.toString)
           logger.info("Response Time: (ms)" + timedResp.elapsed)
