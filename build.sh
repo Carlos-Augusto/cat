@@ -12,6 +12,7 @@ cp target/lib bin/ -r
 touch bin/catalina.sh
 echo '#!/usr/bin/env bash' >> bin/catalina.sh
 echo 'set -e' >> bin/catalina.sh
+echo 'cd $HOME/sources/catalina/bin' >> bin/catalina.sh
 echo 'java -cp catalina-1.0.0.jar com.flatmappable.Catalina "$@"' >> bin/catalina.sh
 chmod +x bin/catalina.sh
 
