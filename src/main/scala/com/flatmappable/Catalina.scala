@@ -111,7 +111,7 @@ object Catalina {
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
               val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, AbstractUbirchClient.toBytesFromHex(x.upp))
-              logger.info("Status Response: " + resp.getStatusLine.getStatusCode.toString)
+              HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
             }
           }
 
@@ -163,7 +163,7 @@ object Catalina {
             val bytes = EntityUtils.toByteArray(resp.getEntity)
             val pm = MsgPackProtocolDecoder.getDecoder.decode(bytes)
 
-            logger.info("Response Status: " + resp.getStatusLine.getStatusCode.toString)
+            HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
             logger.info("Response Headers: " + resp.getAllHeaders.toList.mkString(", "))
             logger.info("Response BodyHex: " + Hex.encodeHexString(bytes))
             logger.info("Response Body: " + pm.toString)
@@ -187,7 +187,7 @@ object Catalina {
             VerifyData.full(VerifyTimestamp.hash)
           }
 
-          logger.info("Status Response: " + resp.getStatusLine.getStatusCode.toString)
+          HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
 
           val body = HttpHelpers.readEntityAsJValue(resp)
 

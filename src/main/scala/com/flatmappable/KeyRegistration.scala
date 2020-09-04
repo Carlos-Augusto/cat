@@ -82,7 +82,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
     logger.info("Data: " + data)
     logger.info("Verification: " + verification.toString)
     logger.info("Response: " + body)
-    logger.info("Status Response: " + resp.getStatusLine.getStatusCode.toString)
+    HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
   }
 
   def createServerKey(serverKeyBytes: Array[Byte]): PubKey = {
