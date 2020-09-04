@@ -5,7 +5,7 @@ import java.nio.file.{ Files, Paths }
 import java.util.UUID
 
 import com.flatmappable.models.AbstractUbirchClient
-import com.flatmappable.util.{ HttpHelpers, Timer }
+import com.flatmappable.util.{ EnvConfigs, HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
@@ -88,6 +88,8 @@ object Catalina {
   // ----------------------------------------------
 
   def main(args: Array[String]) {
+
+    logger.info("Environment={}", EnvConfigs.ENV)
 
     val home = Paths.get(System.getProperty("user.home") + "/.cat/")
     if (!home.toFile.exists()) {
