@@ -123,35 +123,55 @@ object Catalina {
           KeyRegistration.logOutput(info, data, verification, resp, body)
 
         case Some(CreateTimestamp) =>
-
+          var source = ""
           val data = {
             if (CreateTimestamp.readLine) {
               logger.info("Please enter your data (end with 'return')'")
+              source = "line"
               scala.io.StdIn.readLine()
+            } else if (CreateTimestamp.file.getName.nonEmpty) {
+              source = "file"
+              logger.info(s"$source={}", CreateTimestamp.file.getName)
+              val bytes = if (CreateTimestamp.file.exists() && CreateTimestamp.file.isFile) {
+                Files.readAllBytes(CreateTimestamp.file.toPath)
+              } else {
+                logger.info(s"$source={} doesn't exist", CreateTimestamp.file.getName)
+                Array.empty[Byte]
+              }
+
+              Hex.encodeHexString(bytes)
+
             } else {
+              source = "text"
               CreateTimestamp.text
             }
           }
 
-          logger.info("Creating Timestamp(text) for uuid={}", CreateTimestamp.uuid)
-          logger.info("text={}", data)
+          logger.info(s"Creating Timestamp($source) for uuid={}", CreateTimestamp.uuid)
 
-          val (_, upp, hash) = DataGeneratorCat.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
+          if (data.nonEmpty) {
+            logger.info(s"$source={}", data)
 
-          logger.info("upp={}", upp)
-          logger.info("hash={}", hash)
+            val (_, upp, hash) = DataGeneratorCat.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
 
-          val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, AbstractUbirchClient.toBytesFromHex(upp)), "UPP Sending")
-          val resp = timedResp.getResult
+            logger.info("upp={}", upp)
+            logger.info("hash={}", hash)
 
-          val bytes = EntityUtils.toByteArray(resp.getEntity)
-          val pm = MsgPackProtocolDecoder.getDecoder.decode(bytes)
+            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, AbstractUbirchClient.toBytesFromHex(upp)), "UPP Sending")
+            val resp = timedResp.getResult
 
-          logger.info("Response Status: " + resp.getStatusLine.getStatusCode.toString)
-          logger.info("Response Headers: " + resp.getAllHeaders.toList.mkString(", "))
-          logger.info("Response BodyHex: " + Hex.encodeHexString(bytes))
-          logger.info("Response Body: " + pm.toString)
-          logger.info("Response Time: (ms)" + timedResp.elapsed)
+            val bytes = EntityUtils.toByteArray(resp.getEntity)
+            val pm = MsgPackProtocolDecoder.getDecoder.decode(bytes)
+
+            logger.info("Response Status: " + resp.getStatusLine.getStatusCode.toString)
+            logger.info("Response Headers: " + resp.getAllHeaders.toList.mkString(", "))
+            logger.info("Response BodyHex: " + Hex.encodeHexString(bytes))
+            logger.info("Response Body: " + pm.toString)
+            logger.info("Response Time: (ms)" + timedResp.elapsed)
+
+          } else {
+            logger.warn(s"$source data is not valid. Could be empty or file doesn't exist.")
+          }
 
         case Some(VerifyTimestamp) =>
 
