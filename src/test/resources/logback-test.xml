@@ -16,7 +16,6 @@
 
 <configuration>
 
-
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
@@ -31,11 +30,8 @@
         </encoder>
     </appender>
 
-    <logger name="io.gatling.http.engine.response" level="INFO" />
-
     <root level="INFO">
         <appender-ref ref="STDERR"/>
     </root>
-
 
 </configuration>
