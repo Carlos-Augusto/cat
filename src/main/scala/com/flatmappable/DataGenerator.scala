@@ -11,15 +11,9 @@ import com.ubirch.crypto.PrivKey
 import com.ubirch.protocol.{ Protocol, ProtocolMessage }
 import org.apache.commons.codec.binary.Hex
 
-private class Total {
-  @volatile private var added = 0
-  def inc(): Unit = added = added + 1
-  def total: Int = added
-}
-
 case class SimpleDataGeneration(UUID: UUID, upp: String, hash: String)
 
-class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
+class DataGenerator(uuid: UUID, clientKey: PrivKey)
   extends WithJsonFormats with LazyLogging {
 
   val protocol = new SimpleProtocolImpl(uuid, clientKey)
@@ -39,13 +33,11 @@ class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
     val buf = scala.collection.mutable.ListBuffer.empty[SimpleDataGeneration]
     generate(maxNumberOfMessages, format) { (uuid, upp, hash) =>
       buf += SimpleDataGeneration(uuid, upp, hash)
-      total.inc()
     }
     buf.toList
   }
 
   def single(data: String, format: Protocol.Format, withNonce: Boolean) = {
-    total.inc()
     DataGenerator.buildMessageFromString(uuid, protocol, format, data, withNonce)
   }
 
@@ -54,14 +46,13 @@ class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
 object DataGenerator {
 
   def generate(uuid: UUID, privateKey: String, format: Protocol.Format) = {
-    val total = new Total
     val clientKey = KeyRegistration.getKey(privateKey)
-    new DataGenerator(total, uuid, clientKey).toList(1, format)
+    new DataGenerator(uuid, clientKey).toList(1, format)
   }
 
   def single(uuid: UUID, data: String, privateKey: String, format: Protocol.Format, withNonce: Boolean) = {
     val clientKey = KeyRegistration.getKey(privateKey)
-    new DataGenerator(new Total, uuid, clientKey).single(data, format, withNonce)
+    new DataGenerator(uuid, clientKey).single(data, format, withNonce)
   }
 
   def toBase64(data: Array[Byte]): String = Base64.getEncoder.encodeToString(data)
