@@ -76,24 +76,16 @@
 
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/org.backuity.clist/clist-core -->
         <dependency>
             <groupId>org.backuity.clist</groupId>
             <artifactId>clist-core_${scala.compat.version}</artifactId>
             <version>3.5.1</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.backuity.clist/clist-macros -->
         <dependency>
             <groupId>org.backuity.clist</groupId>
             <artifactId>clist-macros_${scala.compat.version}</artifactId>
             <version>3.5.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.roundeights</groupId>
-            <artifactId>hasher_${scala.compat.version}</artifactId>
-            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.ubirch</groupId>
@@ -125,15 +117,11 @@
             <artifactId>json4s-ext_${scala.compat.version}</artifactId>
             <version>3.6.0</version>
         </dependency>
-        <!-- Scala -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-
-        <!-- Config -->
-
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
@@ -147,35 +135,17 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.api.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback-classic.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${log4j-over-slf4j.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${jcl-over-slf4j.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.compat.version}</artifactId>
             <version>${scala.logging.version}</version>
         </dependency>
 
-        <!-- test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.compat.version}</artifactId>
