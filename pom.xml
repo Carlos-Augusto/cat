@@ -49,32 +49,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <encoding>UTF-8</encoding>
 
-        <scala.version>2.12.8</scala.version>
-        <scala.compat.version>2.12</scala.compat.version>
-
         <ubirch-protocol.version>2.1.3-SNAPSHOT</ubirch-protocol.version>
         <ubirch-crypto.version>2.1.0</ubirch-crypto.version>
+
+        <scala.version>2.12.8</scala.version>
+        <scala.compat.version>2.12</scala.compat.version>
         <scala-maven-plugin.version>3.4.2</scala-maven-plugin.version>
-        <scala.version>2.12.6</scala.version>
-        <scala.major.version>2.12</scala.major.version>
         <scalatest.version>3.0.5</scalatest.version>
-        <ubirch-decoder.version>1.0</ubirch-decoder.version>
         <scala.logging.version>3.9.0</scala.logging.version>
+        <scalariform.version>0.2.2</scalariform.version>
+        <scalatest-maven-plugin.version>1.0</scalatest-maven-plugin.version>
+
         <slf4j.api.version>1.7.15</slf4j.api.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
         <jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
         <logstash-logback-encoder.version>5.3</logstash-logback-encoder.version>
+
         <commons-io.version>2.6</commons-io.version>
 
-        <!-- plugins -->
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
-        <scalariform.version>0.2.2</scalariform.version>
-        <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
         <maven-surefire-plugin.version>2.7</maven-surefire-plugin.version>
-        <scalatest-maven-plugin.version>1.0</scalatest-maven-plugin.version>
-        <!-- plugins -->
 
     </properties>
 
@@ -83,14 +79,14 @@
         <!-- https://mvnrepository.com/artifact/org.backuity.clist/clist-core -->
         <dependency>
             <groupId>org.backuity.clist</groupId>
-            <artifactId>clist-core_${scala.major.version}</artifactId>
+            <artifactId>clist-core_${scala.compat.version}</artifactId>
             <version>3.5.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.backuity.clist/clist-macros -->
         <dependency>
             <groupId>org.backuity.clist</groupId>
-            <artifactId>clist-macros_${scala.major.version}</artifactId>
+            <artifactId>clist-macros_${scala.compat.version}</artifactId>
             <version>3.5.1</version>
             <scope>provided</scope>
         </dependency>
@@ -116,12 +112,12 @@
         </dependency>
         <dependency>
             <groupId>org.json4s</groupId>
-            <artifactId>json4s-core_${scala.major.version}</artifactId>
+            <artifactId>json4s-core_${scala.compat.version}</artifactId>
             <version>3.6.5</version>
         </dependency>
         <dependency>
             <groupId>org.json4s</groupId>
-            <artifactId>json4s-jackson_${scala.major.version}</artifactId>
+            <artifactId>json4s-jackson_${scala.compat.version}</artifactId>
             <version>3.6.5</version>
         </dependency>
         <dependency>
@@ -182,7 +178,7 @@
         <!-- test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_${scala.major.version}</artifactId>
+            <artifactId>scalatest_${scala.compat.version}</artifactId>
             <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>
