@@ -23,11 +23,12 @@ class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
   extends WithJsonFormats with LazyLogging {
 
   val protocol = new SimpleProtocolImpl(uuid, clientKey)
-  val payloadGenerator = new PayloadGenerator(uuid, protocol)
 
   def generate(maxMessages: Int, format: Protocol.Format)(dump: (UUID, String, String) => Unit) = {
     Iterator
-      .continually(payloadGenerator.getOne(format, withNonce = true))
+      .continually {
+        DataGenerator.buildMessageFromInt(uuid, protocol, format, (Math.random * 10 + 10).toInt, withNonce = true)
+      }
       .take(maxMessages)
       .foreach { case (_, upp, hash) =>
         dump(uuid, upp, hash)
@@ -45,7 +46,7 @@ class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
 
   def single(data: String, format: Protocol.Format, withNonce: Boolean) = {
     total.inc()
-    payloadGenerator.fromString(data, format, withNonce)
+    DataGenerator.buildMessageFromString(uuid, protocol, format, data, withNonce)
   }
 
 }
