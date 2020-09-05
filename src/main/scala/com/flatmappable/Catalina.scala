@@ -4,7 +4,6 @@ import java.io.File
 import java.nio.file.{ Files, Paths }
 import java.util.UUID
 
-import com.flatmappable.models.AbstractUbirchClient
 import com.flatmappable.util.{ Configs, HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
@@ -23,19 +22,13 @@ object Catalina {
   protected lazy val logger: Logger =
     Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("Catalina")))
 
-  trait Common { this: Command =>
-    var verbose = opt[Boolean](abbrev = "v")
-  }
-
   implicit val uuidRead: Read[UUID] = reads("a UUID") { UUID.fromString }
 
-  object RegisterKey extends Command(description = "Creates and registers public key") with Common {
-    //var keyStore = opt[String](description = "The name of the key store that will be created", default = "cata-key-store.jks")
-    //var pass = arg[String](description = "The password for the key store")
+  object RegisterKey extends Command(description = "Creates and registers public key") {
     var uuid = arg[UUID](description = "UUID for the identity")
   }
 
-  object GenerateRandomTimestamp extends Command(description = "Creates a random upp and hash") with Common {
+  object GenerateRandomTimestamp extends Command(description = "Creates a random upp and hash") {
     var uuid = arg[UUID](description = "UUID for the identity")
     var privateKey = arg[String](description = "Private Key for UUID for the registered identity")
     var anchor = opt[Boolean](description = "Anchor", abbrev = "-a", default = false)
@@ -49,7 +42,7 @@ object Catalina {
 
   }
 
-  object CreateTimestamp extends Command(description = "Creates a secure timestamp from the  provided using the ubirch network") with Common {
+  object CreateTimestamp extends Command(description = "Creates a secure timestamp from the  provided using the ubirch network") {
     var readLine = opt[Boolean](description = "Read data from console", default = false, abbrev = "-l")
     var withNonce = opt[Boolean](description = "Add a nonce to the message digest", default = false, abbrev = "-n")
     var text = opt[String](description = "The text you would like to timestamp", default = "")
@@ -66,11 +59,7 @@ object Catalina {
 
   }
 
-  object ListTimestamps extends Command(description = "Lists the secure timestamps that have been created") with Common {
-    var `type` = opt[String](description = "The type to filter by \nOptions[text, file]\nDefault=all", default = "all")
-  }
-
-  object VerifyTimestamp extends Command(description = "Lists the secure timestamps that have been created") with Common {
+  object VerifyTimestamp extends Command(description = "Lists the secure timestamps that have been created") {
     var hash = arg[String](description = "The hash to verify", required = true)
     var simple = opt[Boolean](description = "Simple verification.", default = false, abbrev = "-s")
     var initial = opt[Boolean](description = "Initial verification.", default = false, abbrev = "-i")
@@ -84,8 +73,6 @@ object Catalina {
     }
 
   }
-
-  // ----------------------------------------------
 
   def main(args: Array[String]) {
 
@@ -102,6 +89,7 @@ object Catalina {
       .withCommands(RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>
+
           logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
 
           DataGenerator
@@ -110,12 +98,13 @@ object Catalina {
             logger.info("upp={}", x.upp)
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, AbstractUbirchClient.toBytesFromHex(x.upp))
+              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, DataGenerator.toBytesFromHex(x.upp))
               HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
             }
           }
 
         case Some(RegisterKey) =>
+
           logger.info("Registering key for uuid={}", RegisterKey.uuid)
 
           val (pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(RegisterKey.uuid)
@@ -123,6 +112,7 @@ object Catalina {
           KeyRegistration.logOutput(info, data, verification, resp, body)
 
         case Some(CreateTimestamp) =>
+
           var source = ""
           val data = {
             if (CreateTimestamp.readLine) {
@@ -157,7 +147,7 @@ object Catalina {
             logger.info("upp={}", upp)
             logger.info("hash={}", hash)
 
-            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, AbstractUbirchClient.toBytesFromHex(upp)), "UPP Sending")
+            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, DataGenerator.toBytesFromHex(upp)), "UPP Sending")
             val resp = timedResp.getResult
 
             val bytes = EntityUtils.toByteArray(resp.getEntity)
@@ -193,7 +183,8 @@ object Catalina {
 
           logger.info(pretty(body))
 
-        case _ => println("other")
+        case _ =>
+
       }
   }
 }
