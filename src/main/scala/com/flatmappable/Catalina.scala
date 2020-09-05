@@ -98,7 +98,7 @@ object Catalina {
             logger.info("upp={}", x.upp)
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, DataGenerator.toBytesFromHex(x.upp))
+              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, x.hash, x.upp)
               HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
             }
           }
@@ -147,7 +147,7 @@ object Catalina {
             logger.info("upp={}", upp)
             logger.info("hash={}", hash)
 
-            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, DataGenerator.toBytesFromHex(upp)), "UPP Sending")
+            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
             val resp = timedResp.getResult
 
             val bytes = EntityUtils.toByteArray(resp.getEntity)
