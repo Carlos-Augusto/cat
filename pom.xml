@@ -201,7 +201,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.flatmappable.DataGenerator</mainClass>
+                            <mainClass>com.flatmappable.Catalina</mainClass>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
