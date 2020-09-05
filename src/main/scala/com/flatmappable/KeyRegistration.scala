@@ -1,11 +1,12 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.{ Files, Paths, StandardOpenOption }
 import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
 
-import com.flatmappable.util.{ Configs, HttpHelpers, WithJsonFormats }
+import com.flatmappable.util.{ Configs, HttpHelpers, KeyPairHelper, WithJsonFormats }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey, PubKey }
@@ -103,6 +104,19 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
         logger.error("Missing or broken CLIENT_KEY (base64)")
         throw e
     }
+  }
+
+  def newRegistration(uuid: UUID) = {
+    val (pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
+    val response = KeyRegistration.register(uuid, pubKey, privKey)
+
+    if (response._4.getStatusLine.getStatusCode <= 200 || response._4.getStatusLine.getStatusCode <= 200) {
+      val keyLineToSave = s"$uuid,ECC_ED25519,$pubKey,$privKey\n".getBytes(StandardCharsets.UTF_8)
+      Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.keys"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+    }
+
+    (pubKey, privKey, response)
+
   }
 
 }

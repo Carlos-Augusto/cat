@@ -104,7 +104,7 @@ object Catalina {
         case Some(GenerateRandomTimestamp) =>
           logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
 
-          DataGeneratorCat
+          DataGenerator
           .generate(GenerateRandomTimestamp.uuid, GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK)
           .foreach { x =>
             logger.info("upp={}", x.upp)
@@ -118,7 +118,7 @@ object Catalina {
         case Some(RegisterKey) =>
           logger.info("Registering key for uuid={}", RegisterKey.uuid)
 
-          val (pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistrationCat.newRegistration(RegisterKey.uuid)
+          val (pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(RegisterKey.uuid)
           logger.info("pub-key={} priv-key={}", pubKey, privKey)
           KeyRegistration.logOutput(info, data, verification, resp, body)
 
@@ -152,7 +152,7 @@ object Catalina {
           if (data.nonEmpty) {
             logger.info(s"$source={}", data)
 
-            val (_, upp, hash) = DataGeneratorCat.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
+            val (_, upp, hash) = DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
 
             logger.info("upp={}", upp)
             logger.info("hash={}", hash)
