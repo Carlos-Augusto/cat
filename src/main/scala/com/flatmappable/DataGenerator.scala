@@ -13,7 +13,7 @@ import org.apache.commons.codec.binary.Hex
 
 private class Total {
   @volatile private var added = 0
-  def inc: Unit = added = added + 1
+  def inc(): Unit = added = added + 1
   def total: Int = added
 }
 
@@ -38,13 +38,13 @@ class DataGenerator(total: Total, uuid: UUID, clientKey: PrivKey)
     val buf = scala.collection.mutable.ListBuffer.empty[SimpleDataGeneration]
     generate(maxNumberOfMessages, format) { (uuid, upp, hash) =>
       buf += SimpleDataGeneration(uuid, upp, hash)
-      total.inc
+      total.inc()
     }
     buf.toList
   }
 
   def single(data: String, format: Protocol.Format, withNonce: Boolean) = {
-    total.inc
+    total.inc()
     payloadGenerator.fromString(data, format, withNonce)
   }
 

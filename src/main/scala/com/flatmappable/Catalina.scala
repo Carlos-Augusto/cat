@@ -74,7 +74,7 @@ object Catalina {
 
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]) = {
 
     logger.info("Environment={}", Configs.ENV)
 
