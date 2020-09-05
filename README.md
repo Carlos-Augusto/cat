@@ -1,1 +1,3 @@
 # Catalina
+
+![Commands](commands.png)
