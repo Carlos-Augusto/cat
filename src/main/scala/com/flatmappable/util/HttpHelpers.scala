@@ -1,6 +1,5 @@
 package com.flatmappable.util
 
-import com.flatmappable.Catalina.logger
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.http.HttpResponse
 import org.apache.http.util.EntityUtils

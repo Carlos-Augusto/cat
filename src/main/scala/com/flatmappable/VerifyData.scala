@@ -1,6 +1,6 @@
 package com.flatmappable
 
-import com.flatmappable.util.EnvConfigs
+import com.flatmappable.util.Configs
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -17,19 +17,19 @@ object VerifyData {
   }
 
   def simple(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + EnvConfigs.ENV + ".ubirch.com/api/upp", hash))
+    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp", hash))
   }
 
   def initial(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + EnvConfigs.ENV + ".ubirch.com/api/upp/verify", hash))
+    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify", hash))
   }
 
   def upper(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + EnvConfigs.ENV + ".ubirch.com/api/upp/verify/anchor", hash))
+    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/anchor", hash))
   }
 
   def full(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + EnvConfigs.ENV + ".ubirch.com/api/upp/verify/record", hash))
+    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/record", hash))
   }
 
 }

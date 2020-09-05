@@ -5,7 +5,7 @@ import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
 
-import com.flatmappable.util.{ EnvConfigs, HttpHelpers, WithJsonFormats }
+import com.flatmappable.util.{ Configs, HttpHelpers, WithJsonFormats }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey, PubKey }
@@ -51,7 +51,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
   }
 
   def registerKeyRequest(body: String) = {
-    val regRequest = new HttpPost("https://key." + EnvConfigs.ENV + ".ubirch.com/api/keyService/v1/pubkey")
+    val regRequest = new HttpPost("https://key." + Configs.ENV + ".ubirch.com/api/keyService/v1/pubkey")
     regRequest.setHeader("Content-Type", "application/json")
     regRequest.setEntity(new StringEntity(body))
     regRequest

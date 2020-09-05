@@ -1,5 +1,8 @@
 package com.flatmappable.util
 
-object EnvConfigs extends ConfigBase {
+import com.typesafe.config.{ Config, ConfigFactory }
+
+object Configs {
+  val conf: Config = ConfigFactory.load()
   val ENV: String = conf.getString("environment")
 }
