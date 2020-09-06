@@ -12,9 +12,10 @@ object KeyPairHelper {
   def createKeys = createKeysAsString(privateKey)
 
   def createKeysAsString(pk: PrivKey) = {
+    val fullprivKey = Base64.getEncoder.encodeToString(pk.getPrivateKey.getEncoded)
     val privKey = Base64.getEncoder.encodeToString(pk.getRawPrivateKey.slice(0, 32))
     val pubKey = Base64.getEncoder.encodeToString(pk.getRawPublicKey.slice(0, 32))
-    (pubKey, privKey)
+    (fullprivKey, pubKey, privKey)
   }
 
 }

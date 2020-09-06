@@ -107,8 +107,8 @@ object Catalina {
 
           logger.info("Registering key for uuid={}", RegisterKey.uuid)
 
-          val (pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(RegisterKey.uuid)
-          logger.info("pub-key={} priv-key={}", pubKey, privKey)
+          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(RegisterKey.uuid)
+          logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
           KeyRegistration.logOutput(info, data, verification, resp, body)
 
         case Some(CreateTimestamp) =>

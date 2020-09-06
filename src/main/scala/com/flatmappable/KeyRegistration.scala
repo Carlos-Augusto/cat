@@ -86,16 +86,6 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
     HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
   }
 
-  def createServerKey(serverKeyBytes: Array[Byte]): PubKey = {
-    try
-      GeneratorKeyFactory.getPubKey(serverKeyBytes, Curve.Ed25519)
-    catch {
-      case e @ (_: NoSuchAlgorithmException | _: InvalidKeyException) =>
-        logger.error("Missing or broken SERVER_PUBKEY (base64)")
-        throw e
-    }
-  }
-
   def createClientKey(clientKeyBytes: Array[Byte]): PrivKey = {
     try
       GeneratorKeyFactory.getPrivKey(clientKeyBytes, Curve.Ed25519)
@@ -107,7 +97,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
   }
 
   def newRegistration(uuid: UUID) = {
-    val (pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
+    val (key, pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
     val response = KeyRegistration.register(uuid, pubKey, privKey)
 
     if (response._4.getStatusLine.getStatusCode <= 200 || response._4.getStatusLine.getStatusCode <= 200) {
@@ -115,7 +105,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
       Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.keys"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     }
 
-    (pubKey, privKey, response)
+    (key, pubKey, privKey, response)
 
   }
 
