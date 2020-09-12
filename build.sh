@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -e
+INSTALL_FOLDER=$1
 
-echo 'Building ...'
-rm bin -rf
+echo "Building/Installing in $INSTALL_FOLDER ..."
+rm "$INSTALL_FOLDER" -rf
 mvn clean package
-mkdir bin
+mkdir "$INSTALL_FOLDER"
 
-echo 'Installing ...'
-cp target/catalina-1.0.0.jar bin/
-cp target/lib bin/ -r
-touch bin/catalina.sh
-echo '#!/usr/bin/env bash' >> bin/catalina.sh
-echo 'set -e' >> bin/catalina.sh
-echo 'cd $HOME/sources/catalina/bin' >> bin/catalina.sh
-echo 'java -cp catalina-1.0.0.jar com.flatmappable.Catalina "$@"' >> bin/catalina.sh
-chmod +x bin/catalina.sh
+cp target/catalina-1.0.0.jar "$INSTALL_FOLDER"
+cp target/lib "$INSTALL_FOLDER" -r
+touch "$INSTALL_FOLDER"/catalina.sh
+echo '#!/usr/bin/env bash' >> "$INSTALL_FOLDER"/catalina.sh
+echo 'set -e' >> "$INSTALL_FOLDER"/catalina.sh
+echo "cd $INSTALL_FOLDER" >> "$INSTALL_FOLDER"/catalina.sh
+echo 'java -cp catalina-1.0.0.jar com.flatmappable.Catalina "$@"' >> "$INSTALL_FOLDER"/catalina.sh
+chmod +x "$INSTALL_FOLDER"/catalina.sh
 
