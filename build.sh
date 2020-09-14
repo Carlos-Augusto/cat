@@ -22,7 +22,7 @@ touch "$INSTALL_FOLDER"/catalina.sh
 echo '#!/usr/bin/env bash' >> "$INSTALL_FOLDER"/catalina.sh
 echo 'set -e' >> "$INSTALL_FOLDER"/catalina.sh
 echo "cd $INSTALL_FOLDER" >> "$INSTALL_FOLDER"/catalina.sh
-echo "java -cp $JARNAME com.flatmappable.Catalina \"$*\"" >> "$INSTALL_FOLDER"/catalina.sh
+echo "java -cp $JARNAME"' com.flatmappable.Catalina "$@"' >> "$INSTALL_FOLDER"/catalina.sh
 chmod +x "$INSTALL_FOLDER"/catalina.sh
 
 echo "For quick access, add these like to your profile of bashrc file"
