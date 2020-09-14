@@ -2,6 +2,13 @@
 set -e
 INSTALL_FOLDER=$1
 
+if [ -z "$1" ]
+  then
+    echo "No install path provided. Please provide where you would like to install the system."
+    echo "For example: $HOME/catalina"
+    exit 1
+fi
+
 echo "Building/Installing in $INSTALL_FOLDER ..."
 rm "$INSTALL_FOLDER" -rf
 mvn clean package
