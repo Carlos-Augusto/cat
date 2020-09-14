@@ -9,7 +9,7 @@ import java.util.{ Base64, TimeZone, UUID }
 import com.flatmappable.util.{ Configs, HttpHelpers, KeyPairHelper, WithJsonFormats }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.utils.Curve
-import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey, PubKey }
+import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
