@@ -100,7 +100,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
     val (key, pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
     val response = KeyRegistration.register(uuid, pubKey, privKey)
 
-    if (response._4.getStatusLine.getStatusCode <= 200 || response._4.getStatusLine.getStatusCode <= 200) {
+    if (response._4.getStatusLine.getStatusCode >= 200 || response._4.getStatusLine.getStatusCode <= 299) {
       val keyLineToSave = s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8)
       Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.keys"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     }
