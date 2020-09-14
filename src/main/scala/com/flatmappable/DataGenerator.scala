@@ -1,5 +1,6 @@
 package com.flatmappable
 
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.{ Base64, UUID }
@@ -41,6 +42,10 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey)
     DataGenerator.buildMessageFromString(uuid, protocol, format, data, withNonce)
   }
 
+  def single(data: Array[Byte], format: Protocol.Format) = {
+    DataGenerator.buildMessage(uuid, protocol, format, data)
+  }
+
 }
 
 object DataGenerator {
@@ -55,20 +60,29 @@ object DataGenerator {
     new DataGenerator(uuid, clientKey).single(data, format, withNonce)
   }
 
+  def single(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format) = {
+    val clientKey = KeyRegistration.getKey(privateKey)
+    new DataGenerator(uuid, clientKey).single(data, format)
+  }
+
   def toBase64(data: Array[Byte]): String = Base64.getEncoder.encodeToString(data)
 
   def toHex(data: Array[Byte]): String = Hex.encodeHexString(data)
 
   def toBytesFromHex(data: String): Array[Byte] = Hex.decodeHex(data)
 
+  def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: Array[Byte]): (ProtocolMessage, Array[Byte], Array[Byte]) = {
+    val hash = MessageDigest.getInstance("SHA-512").digest(data)
+    val pm = new ProtocolMessage(ProtocolMessage.SIGNED, clientUUID, 0x00, hash)
+    val upp = protocol.encodeSign(pm, format)
+    (pm, upp, hash)
+  }
+
   def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val ts = System.currentTimeMillis
     val message = if (withNonce) data + "," + df.format(ts) + "," + clientUUID.toString else data
-    val hash = MessageDigest.getInstance("SHA-512").digest(message.getBytes)
-    val pm = new ProtocolMessage(ProtocolMessage.SIGNED, clientUUID, 0x00, hash)
-    val upp = protocol.encodeSign(pm, format)
-    (pm, upp, hash)
+    buildMessage(clientUUID, protocol, format, message.getBytes(StandardCharsets.UTF_8))
   }
 
   def buildMessageFromInt(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, temp: Int, withNonce: Boolean): (ProtocolMessage, String, String) = {

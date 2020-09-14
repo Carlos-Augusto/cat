@@ -9,7 +9,6 @@ import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
 import org.apache.commons.codec.binary.Hex
-import org.apache.http.util.EntityUtils
 import org.backuity.clist._
 import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
@@ -101,7 +100,7 @@ object Catalina {
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
               val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, x.hash, x.upp)
-              HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
+              HttpHelpers.printStatus(resp.status)
             }
           }
 
@@ -111,17 +110,17 @@ object Catalina {
 
           logger.info("Registering key for uuid={}", uuid)
 
-          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(uuid)
+          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp)) = KeyRegistration.newRegistration(uuid)
           logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
-          KeyRegistration.logOutput(info, data, verification, resp, body)
+          KeyRegistration.logOutput(info, data, verification, resp)
 
         case Some(RegisterKey) =>
 
           logger.info("Registering key for uuid={}", RegisterKey.uuid)
 
-          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(RegisterKey.uuid)
+          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp)) = KeyRegistration.newRegistration(RegisterKey.uuid)
           logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
-          KeyRegistration.logOutput(info, data, verification, resp, body)
+          KeyRegistration.logOutput(info, data, verification, resp)
 
         case Some(CreateTimestamp) =>
 
@@ -165,12 +164,11 @@ object Catalina {
             val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
             val resp = timedResp.getResult
 
-            val bytes = EntityUtils.toByteArray(resp.getEntity)
-            val pm = MsgPackProtocolDecoder.getDecoder.decode(bytes)
+            val pm = MsgPackProtocolDecoder.getDecoder.decode(resp.body)
 
-            HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
-            logger.info("Response Headers: " + resp.getAllHeaders.toList.mkString(", "))
-            logger.info("Response BodyHex: " + Hex.encodeHexString(bytes))
+            HttpHelpers.printStatus(resp.status)
+            logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
+            logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
             logger.info("Response Body: " + pm.toString)
             logger.info("Response Time: (ms)" + timedResp.elapsed)
 
@@ -192,11 +190,11 @@ object Catalina {
             VerifyData.full(VerifyTimestamp.hash)
           }
 
-          HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
+          HttpHelpers.printStatus(resp.status)
 
-          val body = HttpHelpers.readEntityAsJValue(resp)
+          val body = HttpHelpers.readEntityAsJValue(resp.body)
 
-          logger.info(pretty(body))
+          logger.info("\n" + pretty(body))
 
         case _ =>
 
