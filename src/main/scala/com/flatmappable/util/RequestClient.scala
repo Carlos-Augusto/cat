@@ -1,9 +1,9 @@
 package com.flatmappable.util
-import org.apache.http.{ Header, HttpResponse }
+import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.{ CloseableHttpClient, HttpClients }
-import org.apache.http.client.ResponseHandler
 import org.apache.http.util.EntityUtils
+import org.apache.http.{ Header, HttpResponse }
 
 case class ResponseData[T](status: Int, headers: Array[Header], body: T)
 

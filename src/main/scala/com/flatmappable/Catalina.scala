@@ -9,7 +9,6 @@ import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
 import org.apache.commons.codec.binary.Hex
-import org.apache.http.util.EntityUtils
 import org.backuity.clist._
 import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
@@ -191,11 +190,11 @@ object Catalina {
             VerifyData.full(VerifyTimestamp.hash)
           }
 
-          HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
+          HttpHelpers.printStatus(resp.status)
 
-          val body = HttpHelpers.readEntityAsJValue(resp)
+          val body = HttpHelpers.readEntityAsJValue(resp.body)
 
-          logger.info(pretty(body))
+          logger.info("\n" + pretty(body))
 
         case _ =>
 

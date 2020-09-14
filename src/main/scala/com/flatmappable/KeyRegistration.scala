@@ -6,15 +6,12 @@ import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
 
-import com.flatmappable.util.{ Configs, HttpHelpers, KeyPairHelper, RequestClient, ResponseData, WithJsonFormats }
+import com.flatmappable.util._
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
-import org.apache.http.HttpResponse
-import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
 import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with WithJsonFormats with LazyLogging {

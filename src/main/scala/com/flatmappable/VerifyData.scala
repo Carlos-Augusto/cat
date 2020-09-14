@@ -1,14 +1,10 @@
 package com.flatmappable
 
-import com.flatmappable.util.Configs
-import org.apache.http.client.HttpClient
+import com.flatmappable.util.{ Configs, RequestClient }
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
 
-object VerifyData {
-
-  val client: HttpClient = HttpClients.createMinimal()
+object VerifyData extends RequestClient {
 
   def verifyKeyRequest(url: String, hash: String) = {
     val regRequest = new HttpPost(url)
@@ -17,19 +13,19 @@ object VerifyData {
   }
 
   def simple(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp", hash))
+    callAsString(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp", hash))
   }
 
   def initial(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify", hash))
+    callAsString(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify", hash))
   }
 
   def upper(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/anchor", hash))
+    callAsString(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/anchor", hash))
   }
 
   def full(hash: String) = {
-    client.execute(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/record", hash))
+    callAsString(verifyKeyRequest("https://verify." + Configs.ENV + ".ubirch.com/api/upp/verify/record", hash))
   }
 
 }
