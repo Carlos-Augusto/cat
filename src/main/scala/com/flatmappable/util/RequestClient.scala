@@ -11,12 +11,10 @@ trait RequestClient {
 
   private val httpclient: CloseableHttpClient = HttpClients.createDefault
 
+  sys.addShutdownHook(httpclient.close())
+
   def call[T](request: HttpRequestBase, responseHandler: ResponseHandler[T]): T = {
-    try {
-      httpclient.execute(request, responseHandler)
-    } finally {
-      httpclient.close()
-    }
+    httpclient.execute(request, responseHandler)
   }
 
   def call(request: HttpRequestBase): ResponseData[Array[Byte]] = {
