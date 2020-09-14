@@ -27,7 +27,7 @@ object DataSending {
   def send(uuid: UUID, password: String, hash: String, upp: String) = {
     val response = client.execute(sendKeyRequest(uuid, password, DataGenerator.toBytesFromHex(upp)))
 
-    if (response.getStatusLine.getStatusCode <= 200 || response.getStatusLine.getStatusCode <= 200) {
+    if (response.getStatusLine.getStatusCode >= 200 || response.getStatusLine.getStatusCode <= 299) {
       val keyLineToSave = s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8)
       Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.sent_upps"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     }
