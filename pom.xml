@@ -278,16 +278,6 @@
                     <goals>deploy</goals>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <resultsFolder>${project.basedir}/gatling-results</resultsFolder>
-                    <jvmArgs>-Xmx4G</jvmArgs>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
