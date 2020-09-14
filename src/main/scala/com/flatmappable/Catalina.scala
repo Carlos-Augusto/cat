@@ -2,7 +2,7 @@ package com.flatmappable
 
 import java.io.File
 import java.nio.file.{ Files, Paths }
-import java.util.UUID
+import java.util.{ Base64, UUID }
 
 import com.flatmappable.util.{ Configs, HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
@@ -27,6 +27,8 @@ object Catalina {
   object RegisterKey extends Command(description = "Creates and registers public key") {
     var uuid = arg[UUID](description = "UUID for the identity")
   }
+
+  object RegisterRandomKey extends Command(description = "Creates and registers public key based on a random uuid that is generated internally")
 
   object GenerateRandomTimestamp extends Command(description = "Creates a random upp and hash") {
     var uuid = arg[UUID](description = "UUID for the identity")
@@ -86,7 +88,7 @@ object Catalina {
     Cli.parse(args)
       .withProgramName("catalina")
       .version("1.1.0")
-      .withCommands(RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
+      .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>
 
@@ -102,6 +104,16 @@ object Catalina {
               HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
             }
           }
+
+        case Some(RegisterRandomKey) =>
+
+          val uuid = UUID.randomUUID()
+
+          logger.info("Registering key for uuid={}", uuid)
+
+          val (fullPrivKey, pubKey, privKey, (info, data, verification, resp, body)) = KeyRegistration.newRegistration(uuid)
+          logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
+          KeyRegistration.logOutput(info, data, verification, resp, body)
 
         case Some(RegisterKey) =>
 
@@ -142,9 +154,12 @@ object Catalina {
           if (data.nonEmpty) {
             logger.info(s"$source={}", data)
 
-            val (_, upp, hash) = DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
+            val (pmo, upp, hash) = DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
 
+            logger.info("pm={}", pmo.toString)
+            logger.info("upp={}", Base64.getEncoder.encodeToString(Hex.decodeHex(upp)))
             logger.info("upp={}", upp)
+            logger.info("signed={}", Base64.getEncoder.encodeToString(pmo.getSigned))
             logger.info("hash={}", hash)
 
             val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
