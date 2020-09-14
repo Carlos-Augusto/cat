@@ -6,7 +6,7 @@ import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
 
-import com.flatmappable.util.{ Configs, HttpHelpers, KeyPairHelper, WithJsonFormats }
+import com.flatmappable.util.{ Configs, HttpHelpers, KeyPairHelper, RequestClient, ResponseData, WithJsonFormats }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
@@ -17,9 +17,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.json4s.jackson.JsonMethods._
 
-object KeyRegistration extends WithJsonFormats with LazyLogging {
-
-  val client: HttpClient = HttpClients.createMinimal()
+object KeyRegistration extends RequestClient with WithJsonFormats with LazyLogging {
 
   val df = {
     val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -72,18 +70,17 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
     val data = compact(parse(registrationData(info, Base64.getEncoder.encodeToString(signature))))
 
     val verification = clientKey.verify(info.getBytes, signature)
-    val resp = client.execute(registerKeyRequest(data))
-    val body = HttpHelpers.readEntity(resp)
+    val resp = callAsString(registerKeyRequest(data))
 
-    (info, data, verification, resp, body)
+    (info, data, verification, resp)
   }
 
-  def logOutput(info: String, data: String, verification: Boolean, resp: HttpResponse, body: String) = {
+  def logOutput(info: String, data: String, verification: Boolean, resp: ResponseData[String]) = {
     logger.info("Info: " + info)
     logger.info("Data: " + data)
     logger.info("Verification: " + verification.toString)
-    logger.info("Response: " + body)
-    HttpHelpers.printStatus(resp.getStatusLine.getStatusCode)
+    logger.info("Response: " + resp.body)
+    HttpHelpers.printStatus(resp.status)
   }
 
   def createClientKey(clientKeyBytes: Array[Byte]): PrivKey = {
@@ -100,7 +97,7 @@ object KeyRegistration extends WithJsonFormats with LazyLogging {
     val (key, pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
     val response = KeyRegistration.register(uuid, pubKey, privKey)
 
-    if (response._4.getStatusLine.getStatusCode >= 200 || response._4.getStatusLine.getStatusCode <= 299) {
+    if (response._4.status >= 200 && response._4.status < 300) {
       val keyLineToSave = s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8)
       Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.keys"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     }

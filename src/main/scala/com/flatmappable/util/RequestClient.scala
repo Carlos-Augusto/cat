@@ -20,15 +20,19 @@ trait RequestClient {
   }
 
   def call(request: HttpRequestBase): ResponseData[Array[Byte]] = {
-    try {
-      httpclient.execute(request, (httpResponse: HttpResponse) => ResponseData(
-        httpResponse.getStatusLine.getStatusCode,
-        httpResponse.getAllHeaders,
-        EntityUtils.toByteArray(httpResponse.getEntity)
-      ))
-    } finally {
-      httpclient.close()
-    }
+    call(request, (httpResponse: HttpResponse) => ResponseData(
+      httpResponse.getStatusLine.getStatusCode,
+      httpResponse.getAllHeaders,
+      EntityUtils.toByteArray(httpResponse.getEntity)
+    ))
+  }
+
+  def callAsString(request: HttpRequestBase): ResponseData[String] = {
+    call(request, (httpResponse: HttpResponse) => ResponseData(
+      httpResponse.getStatusLine.getStatusCode,
+      httpResponse.getAllHeaders,
+      EntityUtils.toString(httpResponse.getEntity)
+    ))
   }
 
 }
