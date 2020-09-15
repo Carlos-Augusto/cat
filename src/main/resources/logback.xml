@@ -26,7 +26,7 @@
     <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.err</target>
         <encoder>
-            <pattern>cat=> %msg%n</pattern>
+            <pattern>cat (err) => %msg%n</pattern>
         </encoder>
     </appender>
 
