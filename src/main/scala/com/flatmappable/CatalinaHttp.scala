@@ -4,12 +4,23 @@ import java.util.UUID
 
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.protocol.Protocol
+import ujson.Obj
 
 import scala.util.Try
 
 object CatalinaHttp extends cask.MainRoutes with LazyLogging {
 
   case class BadRequestException(message: String) extends Exception(message)
+
+  case class ResponseMessage(status: Int, message: String, data: String = "") {
+    def toJson: Obj = {
+      ujson.Obj(
+        "status" -> status,
+        "message" -> message,
+        "data" -> data
+      )
+    }
+  }
 
   @cask.get("/")
   def hello() = {
@@ -29,19 +40,22 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       val res = DataSending.send(identity, pass, DataGenerator.toBase64(hash), DataGenerator.toHex(upp))
 
       if (res.status >= 200 && res.status < 300) {
-        cask.Response(DataGenerator.toBase64(hash), res.status)
+        cask.Response(ResponseMessage(res.status, "Success", DataGenerator.toBase64(hash)).toJson, res.status)
+      } else if(res.status == 409) {
+        logger.error(s"UPP already known=${DataGenerator.toBase64(hash)} Status=${res.status}")
+        cask.Response(ResponseMessage(res.status, "KnownUPPError", s"Error Sending UPP with Hash=${DataGenerator.toBase64(hash)}").toJson, res.status)
       } else {
         logger.error(s"Error Sending UPP=${DataGenerator.toBase64(hash)} Status=${res.status}")
-        cask.Response(s"Error Sending UPP with Hash=${DataGenerator.toBase64(hash)}", res.status)
+        cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${DataGenerator.toBase64(hash)}").toJson, res.status)
       }
 
     } catch {
       case BadRequestException(message) =>
         logger.error("Bad Request={}", message)
-        cask.Response(message, 400)
+        cask.Response(ResponseMessage(400, "BadRequest", message).toJson, 400)
       case e: Exception =>
         logger.error("Internal error", e)
-        cask.Response("Internal Error", 500)
+        cask.Response(ResponseMessage(500, "InternalError").toJson, 500)
     }
   }
 
