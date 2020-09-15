@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 INSTALL_FOLDER=$1
-VERSION=0.0.2
+VERSION=0.0.3
 JARNAME="catalina-$VERSION.jar"
 
 if [ -z "$1" ]
