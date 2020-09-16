@@ -1,6 +1,7 @@
 package com.flatmappable
 
 import java.io.File
+import java.nio.charset.StandardCharsets
 import java.nio.file.{ Files, Paths }
 import java.util.{ Base64, UUID }
 
@@ -14,6 +15,8 @@ import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
 import org.json4s.jackson.JsonMethods._
 import org.slf4j.LoggerFactory
+
+import scala.util.Try
 
 object Catalina {
 
@@ -164,12 +167,13 @@ object Catalina {
             val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
             val resp = timedResp.getResult
 
-            val pm = MsgPackProtocolDecoder.getDecoder.decode(resp.body)
+            val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
+              .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
             HttpHelpers.printStatus(resp.status)
             logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
             logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
-            logger.info("Response Body: " + pm.toString)
+            logger.info("Response Body: " + pm)
             logger.info("Response Time: (ms)" + timedResp.elapsed)
 
           } else {

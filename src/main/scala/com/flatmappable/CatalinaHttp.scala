@@ -41,7 +41,7 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
 
       if (res.status >= 200 && res.status < 300) {
         cask.Response(ResponseMessage(res.status, "Success", DataGenerator.toBase64(hash)).toJson, res.status)
-      } else if(res.status == 409) {
+      } else if (res.status == 409) {
         logger.error(s"UPP already known=${DataGenerator.toBase64(hash)} Status=${res.status}")
         cask.Response(ResponseMessage(res.status, "KnownUPPError", DataGenerator.toBase64(hash)).toJson, res.status)
       } else {
