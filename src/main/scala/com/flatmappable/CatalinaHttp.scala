@@ -59,5 +59,10 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
     }
   }
 
+
+  override def port: Int = 8080
+
+  override def host: String = "0.0.0.0"
+
   initialize()
 }
