@@ -10,6 +10,8 @@ import scala.util.Try
 
 object CatalinaHttp extends cask.MainRoutes with LazyLogging {
 
+  init()
+
   case class BadRequestException(message: String) extends Exception(message)
 
   case class ResponseMessage(status: Int, message: String, data: String = "") {
@@ -58,7 +60,6 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
         cask.Response(ResponseMessage(500, "InternalError").toJson, 500)
     }
   }
-
 
   override def port: Int = 8080
 

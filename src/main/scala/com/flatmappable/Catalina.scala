@@ -2,10 +2,10 @@ package com.flatmappable
 
 import java.io.File
 import java.nio.charset.StandardCharsets
-import java.nio.file.{ Files, Paths }
+import java.nio.file.Files
 import java.util.{ Base64, UUID }
 
-import com.flatmappable.util.{ Configs, HttpHelpers, Timer }
+import com.flatmappable.util.{ HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
@@ -80,12 +80,7 @@ object Catalina {
 
   def main(args: Array[String]) = {
 
-    logger.info("Environment={}", Configs.ENV)
-
-    val home = Paths.get(System.getProperty("user.home") + "/.cat/")
-    if (!home.toFile.exists()) {
-      Files.createDirectory(home)
-    }
+    init()
 
     Cli.parse(args)
       .withProgramName("catalina")

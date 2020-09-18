@@ -1,7 +1,7 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{ Files, Paths, StandardOpenOption }
+import java.nio.file.Paths
 import java.util.UUID
 
 import com.flatmappable.util.{ Configs, RequestClient }
@@ -23,13 +23,13 @@ object DataSending extends RequestClient {
   def send(uuid: UUID, password: String, hash: String, upp: String) = {
     val response = call(sendKeyRequest(uuid, password, DataGenerator.toBytesFromHex(upp)))
 
-    if (response.status >= 200 && response.status < 300) {
-      val keyLineToSave = s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8)
-      Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.sent_upps"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
-    }
+    store(
+      s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
+      Paths.get(".cat/.sent_upps"),
+      response.status
+    )
 
     response
-
   }
 
 }
