@@ -2,9 +2,9 @@
 
 ![CI with Maven](https://github.com/Carlos-Augusto/cat/workflows/CI%20with%20Maven/badge.svg)
 
-![Commands](commands.png)
+![Commands](images/commandsWithDesc.png)
 
-This is a super simple tool that allows to use the ubirch trust service. This tool is a command line.
+This is a tool that allows to use the Ubirch Trust Service. This tool is a command line.
 Its features are:
 
 * **create timestamps:** There are different kinds of timestamps you can create. You can create a timestamp based

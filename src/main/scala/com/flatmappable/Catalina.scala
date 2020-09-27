@@ -198,7 +198,7 @@ object Catalina {
           }
 
           HttpHelpers.printStatus(resp.status)
-        
+
           if (resp.status >= 200 && resp.status < 300) {
             val body = HttpHelpers.readEntityAsJValue(resp.body)
             logger.info("\n" + pretty(body))
