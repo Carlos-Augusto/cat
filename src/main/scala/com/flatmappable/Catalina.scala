@@ -86,7 +86,14 @@ object Catalina {
 
     Cli.parse(args)
       .withProgramName("catalina")
-      .version("1.1.0")
+      .withDescription(
+        "Tool to use the Ubirch Trust Service",
+        Some("With this tool, you can interact with the core-features of the Ubirch Trust Platform (Cloud). \n" +
+          "You are able to send micro-certificates from different sources, files, user input, fixed strings. \n" +
+          "You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled. \n\n" +
+          "To modify the target stage or environment , run: export CAT_ENV=dev | demo | prod ")
+      )
+      .version("0.0.2")
       .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>

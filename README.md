@@ -23,6 +23,15 @@ identity id.
 This feature is meant to verify the generated timestamps. You can select the type of verfication 
 you would like to have. 
 
+For every one of these feature, you can set the stage at which the system will point to on the Ubirch Platform [dev, demo, prod]
+By default dev is used. 
+
+To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
+
+```
+export CAT_ENV=dev 
+```
+
 ## Install from sources
 
 Clone the project
