@@ -93,7 +93,7 @@ object Catalina {
           "You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled. \n\n" +
           "To modify the target stage or environment , run: export CAT_ENV=dev | demo | prod ")
       )
-      .version("0.0.2")
+      .version("0.0.3")
       .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>
