@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-URL=http://localhost:3000
+VERSION=0.0.3
+URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
 INSTALL_FOLDER=/opt/catalina
 SYMLINK=/usr/bin/catalina
-VERSION=0.0.3
 
 if [ $EUID -ne 0 ]
   then
