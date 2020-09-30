@@ -32,29 +32,55 @@ To modify this, export the following variable. The following are the expected va
 export CAT_ENV=dev 
 ```
 
+## Install
+
+To install the latest version: 
+
+Download 
+
+```shell script
+curl -s https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}/install.sh
+```
+
+Run script with best option for you.
+```shell script
+./install.sh -r
+```
+
+Options
+```shell script
+install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
+-r -> will remove possible existing install
+-c -> will remove possible existing install on custom place
+-p -> will prompt if same install is found
+-e -> will prompt if same install is found and will install on custom place
+```
+
 ## Install from sources
 
 Clone the project
-```
+```shell script
 git clone git@github.com:Carlos-Augusto/cat.git 
 ```
 
 Enter the cat folder or where you cloned it into
-```
+```shell script
 cd cat 
 ```
 
 Run the install script. Use as argument the path for your catalina install.
-```
+```shell script
 ./build.sh PATH_FOR_INSTALL
 ```
 
 For quick access, add your install folder to your path.
-```
+```shell script
 export PATH=$INSTALL_FOLDER:\$PATH"
 ```
 
 Run to see the options
-```
+```shell script
 ./catalina.sh
 ```
+
+
