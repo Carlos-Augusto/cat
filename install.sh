@@ -74,20 +74,32 @@ function installPrompting () {
 }
 
 function help() {
-  echo "install [-r] [-p]";
+  echo "install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]";
   echo "-r -> will remove possible existing install";
+  echo "-c -> will remove possible existing install on custom place";
   echo "-p -> will prompt if same install is found";
+  echo "-e -> will prompt if same install is found and will install on custom place";
 }
 
-while getopts "rp" OPTION
+while getopts "rpc:e:" OPTION
 do
 	case $OPTION in
 		r)
 			installRemoving;
 			exit;
 			;;
+	  c)
+	    INSTALL_FOLDER=$OPTARG
+	    installRemoving
+			exit;
+			;;
 		p)
 		  installPrompting;
+			exit;
+			;;
+	  e)
+	    INSTALL_FOLDER=$OPTARG
+	    installPrompting
 			exit;
 			;;
 		\?)
