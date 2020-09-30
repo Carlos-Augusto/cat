@@ -6,6 +6,16 @@ INSTALL_FOLDER=/opt/catalina
 SYMLINK=/usr/bin/catalina
 VERSION=0.0.3
 
+if type -p java; then
+    echo found java executable in PATH
+    _java=java
+elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    echo found java executable in JAVA_HOME
+    _java="$JAVA_HOME/bin/java"
+else
+    echo "No java found. Please install java >= 1.8"
+fi
+
 if [ $EUID -ne 0 ]
   then
     echo "Run with sudo";
