@@ -96,7 +96,7 @@ object KeyRegistration extends RequestClient with WithJsonFormats with LazyLoggi
 
     store(
       s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8),
-      Paths.get(".cat/.keys"),
+      PATH_KEYS,
       response._4.status
     )
 

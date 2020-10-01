@@ -1,7 +1,6 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
 import java.util.UUID
 
 import com.flatmappable.util.{ Configs, RequestClient }
@@ -25,7 +24,7 @@ object DataSending extends RequestClient {
 
     store(
       s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
-      Paths.get(".cat/.sent_upps"),
+      PATH_UPPs,
       response.status
     )
 

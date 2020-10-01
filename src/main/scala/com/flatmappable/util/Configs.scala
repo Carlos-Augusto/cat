@@ -5,4 +5,5 @@ import com.typesafe.config.{ Config, ConfigFactory }
 object Configs {
   val conf: Config = ConfigFactory.load()
   val ENV: String = conf.getString("environment")
+  val DATA_FOLDER: String = conf.getString("dataFolder")
 }
