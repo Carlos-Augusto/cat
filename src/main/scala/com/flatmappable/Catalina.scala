@@ -1,10 +1,11 @@
 package com.flatmappable
 
 import java.io.File
-import java.nio.file.{ Files, Paths }
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.util.{ Base64, UUID }
 
-import com.flatmappable.util.{ Configs, HttpHelpers, Timer }
+import com.flatmappable.util.{ HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
@@ -14,6 +15,8 @@ import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
 import org.json4s.jackson.JsonMethods._
 import org.slf4j.LoggerFactory
+
+import scala.util.Try
 
 object Catalina {
 
@@ -77,12 +80,7 @@ object Catalina {
 
   def main(args: Array[String]) = {
 
-    logger.info("Environment={}", Configs.ENV)
-
-    val home = Paths.get(System.getProperty("user.home") + "/.cat/")
-    if (!home.toFile.exists()) {
-      Files.createDirectory(home)
-    }
+    init()
 
     Cli.parse(args)
       .withProgramName("catalina")
@@ -93,7 +91,7 @@ object Catalina {
           "You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled. \n\n" +
           "To modify the target stage or environment , run: export CAT_ENV=dev | demo | prod ")
       )
-      .version("0.0.3")
+      .version("0.0.4")
       .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>
@@ -171,12 +169,13 @@ object Catalina {
             val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
             val resp = timedResp.getResult
 
-            val pm = MsgPackProtocolDecoder.getDecoder.decode(resp.body)
+            val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
+              .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
             HttpHelpers.printStatus(resp.status)
             logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
             logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
-            logger.info("Response Body: " + pm.toString)
+            logger.info("Response Body: " + pm)
             logger.info("Response Time: (ms)" + timedResp.elapsed)
 
           } else {

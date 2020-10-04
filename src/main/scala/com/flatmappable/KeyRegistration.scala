@@ -1,7 +1,7 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{ Files, Paths, StandardOpenOption }
+import java.nio.file.Paths
 import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
@@ -94,10 +94,11 @@ object KeyRegistration extends RequestClient with WithJsonFormats with LazyLoggi
     val (key, pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
     val response = KeyRegistration.register(uuid, pubKey, privKey)
 
-    if (response._4.status >= 200 && response._4.status < 300) {
-      val keyLineToSave = s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8)
-      Files.write(Paths.get(System.getProperty("user.home") + "/.cat/.keys"), keyLineToSave, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
-    }
+    store(
+      s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8),
+      PATH_KEYS,
+      response._4.status
+    )
 
     (key, pubKey, privKey, response)
 
