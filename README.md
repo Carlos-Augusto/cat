@@ -2,6 +2,8 @@
 
 ![CI with Maven](https://github.com/Carlos-Augusto/cat/workflows/CI%20with%20Maven/badge.svg)
 
+## General Description
+
 ![Commands](images/commandsWithDesc.png)
 
 This is a tool that allows to use the Ubirch Trust Service. This tool is a command line.
@@ -23,8 +25,10 @@ identity id.
 This feature is meant to verify the generated timestamps. You can select the type of verfication 
 you would like to have. 
 
+## Env Variables
+
 For every one of these feature, you can set the stage at which the system will point to on the Ubirch Platform [dev, demo, prod]
-By default dev is used. 
+By default dev wil be used. 
 
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
 
