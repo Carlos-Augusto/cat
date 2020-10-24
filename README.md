@@ -77,12 +77,12 @@ Enter the cat folder or where you cloned it into
 cd cat 
 ```
 
-Run the install script. Use as argument the path for your catalina install.
+Run the installation script. Use as argument the path for your catalina install.
 ```shell script
 ./build.sh PATH_FOR_INSTALL
 ```
 
-For quick access, add your install folder to your path.
+For quick access, add your installation folder to your path.
 ```shell script
 export PATH=$INSTALL_FOLDER:\$PATH"
 ```

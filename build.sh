@@ -16,8 +16,8 @@ mvn clean package
 mkdir "$INSTALL_FOLDER"
 
 cp "target/catalina-${VERSION}-bin.tar.gz" "$INSTALL_FOLDER"
-tar -xvf $INSTALL_FOLDER/catalina-${VERSION}-bin.tar.gz -C $INSTALL_FOLDER
-rm $INSTALL_FOLDER/catalina-${VERSION}-bin.tar.gz
+tar -xvf "$INSTALL_FOLDER"/catalina-${VERSION}-bin.tar.gz -C "$INSTALL_FOLDER"
+rm "$INSTALL_FOLDER"/catalina-${VERSION}-bin.tar.gz
 
 echo ""
 echo "SUCCESS"
