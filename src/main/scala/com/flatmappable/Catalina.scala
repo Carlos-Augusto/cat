@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.UUID
 
-import com.flatmappable.util.{ HttpHelpers, Timer }
+import com.flatmappable.util.Timer
 import com.typesafe.scalalogging.Logger
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
@@ -105,7 +105,7 @@ object Catalina {
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
               val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, x.hash, x.upp)
-              HttpHelpers.printStatus(resp.status)
+              printStatus(resp.status)
             }
           }
 
@@ -172,7 +172,7 @@ object Catalina {
             val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
               .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
-            HttpHelpers.printStatus(resp.status)
+            printStatus(resp.status)
             logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
             logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
             logger.info("Response Body: " + pm)
@@ -196,10 +196,10 @@ object Catalina {
             VerifyData.full(VerifyTimestamp.hash)
           }
 
-          HttpHelpers.printStatus(resp.status)
+          printStatus(resp.status)
 
           if (resp.status >= 200 && resp.status < 300) {
-            val body = HttpHelpers.readEntityAsJValue(resp.body)
+            val body = readEntityAsJValue(resp.body)
             logger.info("\n" + pretty(body))
           }
 

@@ -70,7 +70,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
     logger.info("Data: " + data)
     logger.info("Verification: " + verification.toString)
     logger.info("Response: " + resp.body)
-    HttpHelpers.printStatus(resp.status)
+    printStatus(resp.status)
   }
 
   def createClientKey(clientKeyBytes: Array[Byte]): PrivKey = {

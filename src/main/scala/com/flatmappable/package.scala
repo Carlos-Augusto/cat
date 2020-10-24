@@ -7,6 +7,7 @@ import java.util.{ Base64, TimeZone }
 import com.flatmappable.util.Configs
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.codec.binary.Hex
+import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jackson.Serialization
 import org.json4s.{ Formats, NoTypeHints }
 
@@ -45,5 +46,15 @@ package object flatmappable extends LazyLogging {
   def toHex(data: Array[Byte]): String = Hex.encodeHexString(data)
 
   def toBytesFromHex(data: String): Array[Byte] = Hex.decodeHex(data)
+
+  def readEntityAsJValue(response: String) = parse(response)
+
+  def printStatus(status: Int) = {
+    if (status < 299)
+      logger.info("Response Status: " + Console.GREEN + status + Console.RESET)
+    else
+      logger.info("Response Status: " + Console.RED + status + Console.RESET)
+
+  }
 
 }
