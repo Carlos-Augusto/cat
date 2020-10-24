@@ -198,7 +198,7 @@ object Catalina {
 
           printStatus(resp.status)
 
-          if (resp.status >= 200 && resp.status < 300) {
+          if (resp.status >= OK && resp.status < MULTIPLE_CHOICE) {
             val body = readEntityAsJValue(resp.body)
             logger.info("\n" + pretty(body))
           }

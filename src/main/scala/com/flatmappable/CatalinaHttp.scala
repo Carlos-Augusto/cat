@@ -41,9 +41,9 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       val (_, upp, hash) = DataGenerator.single(identity, body, privateKey, Protocol.Format.MSGPACK)
       val res = DataSending.send(identity, pass, toBase64AsString(hash), toHex(upp))
 
-      if (res.status >= 200 && res.status < 300) {
+      if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
         cask.Response(ResponseMessage(res.status, "Success", toBase64AsString(hash)).toJson, res.status)
-      } else if (res.status == 409) {
+      } else if (res.status == KNOWN_UPP) {
         logger.error(s"UPP already known=${toBase64AsString(hash)} Status=${res.status}")
         cask.Response(ResponseMessage(res.status, "KnownUPPError", toBase64AsString(hash)).toJson, res.status)
       } else {
@@ -54,10 +54,10 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
     } catch {
       case BadRequestException(message) =>
         logger.error("Bad Request={}", message)
-        cask.Response(ResponseMessage(400, "BadRequest", message).toJson, 400)
+        cask.Response(ResponseMessage(BAD_REQUEST, "BadRequest", message).toJson, BAD_REQUEST)
       case e: Exception =>
         logger.error("Internal error", e)
-        cask.Response(ResponseMessage(500, "InternalError").toJson, 500)
+        cask.Response(ResponseMessage(INTERNAL_SERVER_ERROR, "InternalError").toJson, INTERNAL_SERVER_ERROR)
     }
   }
 

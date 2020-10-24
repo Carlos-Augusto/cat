@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.codec.binary.Hex
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.jackson.Serialization
-import org.json4s.{ Formats, NoTypeHints }
+import org.json4s.{ Formats, JValue, NoTypeHints }
 
 package object flatmappable extends LazyLogging {
 
@@ -36,7 +36,7 @@ package object flatmappable extends LazyLogging {
   }
 
   def store(dataToStore: Array[Byte], path: Path, responseStatus: Int): Unit = {
-    if (responseStatus >= 200 && responseStatus < 300) {
+    if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
       Files.write(path, dataToStore, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     }
   }
@@ -47,14 +47,21 @@ package object flatmappable extends LazyLogging {
 
   def toBytesFromHex(data: String): Array[Byte] = Hex.decodeHex(data)
 
-  def readEntityAsJValue(response: String) = parse(response)
+  def readEntityAsJValue(response: String): JValue = parse(response)
 
-  def printStatus(status: Int) = {
-    if (status < 299)
+  def printStatus(status: Int): Unit = {
+    if (status < MULTIPLE_CHOICE)
       logger.info("Response Status: " + Console.GREEN + status + Console.RESET)
     else
       logger.info("Response Status: " + Console.RED + status + Console.RESET)
 
   }
+
+  def OK: Int = 200
+  def MULTIPLE_CHOICE = 300
+  def BAD_REQUEST = 400
+  def CONFLICT = 409
+  def KNOWN_UPP: Int = CONFLICT
+  def INTERNAL_SERVER_ERROR: Int = 500
 
 }
