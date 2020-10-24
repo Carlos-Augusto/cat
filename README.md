@@ -6,28 +6,33 @@
 
 ![Commands](images/commandsWithDesc.png)
 
-This is a tool that allows to use the Ubirch Trust Service. This tool is a command line.
+With this tool, you can interact with the core features of the _Ubirch Trust Platform_ (Cloud). 
+You are able to send micro-certificates from different sources, files, user input, fixed strings. 
+You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled.
+To modify the target stage or environment, run: export CAT_ENV=dev | demo | prod 
+
+This is a tool that allows to use the _Ubirch Trust Service_. This tool is a command line.
 Its features are:
 
 * **create timestamps:** There are different kinds of timestamps you can create. You can create a timestamp based
 on a file, on text, on user input, and random text.
 
-All of the above mentioned timestamps can be salted/added with a nonce.
+All the above mentioned timestamps can be salted/added with a nonce.
 
 * **register keys**
 
-In order to send create a timestamp, a proper public key should be registered on the Ubirch Trust Service.
-This option allows you to quickly register an existing key or it allows you to generate a random key and 
+In order to send create a timestamp, a proper public key should be registered on the _Ubirch Trust Service_.
+This option allows you to quickly register an existing key, or it allows you to generate a random key and 
 identity id.
 
 * **verify timestamps**
 
-This feature is meant to verify the generated timestamps. You can select the type of verfication 
+This feature verifies the generated timestamps. You can select the type of verification 
 you would like to have. 
 
 ## Env Variables
 
-For every one of these feature, you can set the stage at which the system will point to on the Ubirch Platform [dev, demo, prod]
+For every one of these feature, you can set the stage at which the system will point to on the _Ubirch Platform_ [dev, demo, prod]
 By default dev wil be used. 
 
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
