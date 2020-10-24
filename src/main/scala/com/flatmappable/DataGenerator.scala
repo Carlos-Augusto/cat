@@ -2,7 +2,6 @@ package com.flatmappable
 
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import java.text.SimpleDateFormat
 import java.util.UUID
 
 import com.flatmappable.models.SimpleProtocolImpl
@@ -72,9 +71,7 @@ object DataGenerator {
   }
 
   def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, Array[Byte], Array[Byte]) = {
-    val df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    val ts = System.currentTimeMillis
-    val message = if (withNonce) data + "," + df.format(ts) + "," + clientUUID.toString else data
+    val message = if (withNonce) data + "," + defaultDataFormat.format(System.currentTimeMillis) + "," + clientUUID.toString else data
     buildMessage(clientUUID, protocol, format, message.getBytes(StandardCharsets.UTF_8))
   }
 

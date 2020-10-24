@@ -3,7 +3,7 @@ package com.flatmappable
 import java.nio.charset.StandardCharsets
 import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
-import java.util.{ Base64, TimeZone, UUID }
+import java.util.{ Base64, UUID }
 
 import com.flatmappable.util._
 import com.typesafe.scalalogging.LazyLogging
@@ -14,12 +14,6 @@ import org.apache.http.entity.StringEntity
 import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with WithJsonFormats with LazyLogging {
-
-  val df = {
-    val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    _df.setTimeZone(TimeZone.getTimeZone("UTC"))
-    _df
-  }
 
   def pubKeyInfoData(clientUUID: UUID, df: SimpleDateFormat, sk: String) = {
     val now = System.currentTimeMillis()
@@ -61,7 +55,7 @@ object KeyRegistration extends RequestClient with WithJsonFormats with LazyLoggi
 
     val clientKey = getKey(privateKey)
 
-    val info = compact(parse(pubKeyInfoData(UUID, df, publicKey)))
+    val info = compact(parse(pubKeyInfoData(UUID, defaultDataFormat, publicKey)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
     val data = compact(parse(registrationData(info, toBase64AsString(signature))))
 

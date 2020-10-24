@@ -1,7 +1,8 @@
 package com
 
 import java.nio.file.{ Files, Path, Paths, StandardOpenOption }
-import java.util.Base64
+import java.text.SimpleDateFormat
+import java.util.{ Base64, TimeZone }
 
 import com.flatmappable.util.Configs
 import com.typesafe.scalalogging.LazyLogging
@@ -12,6 +13,12 @@ package object flatmappable extends LazyLogging {
   val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
   val PATH_UPPs: Path = PATH_HOME.resolve(".sent_upps").normalize()
   val PATH_KEYS: Path = PATH_HOME.resolve(".keys").normalize()
+
+  val defaultDataFormat: SimpleDateFormat = {
+    val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    _df.setTimeZone(TimeZone.getTimeZone("UTC"))
+    _df
+  }
 
   def init(): Unit = {
     logger.info("Environment={}", Configs.ENV)
