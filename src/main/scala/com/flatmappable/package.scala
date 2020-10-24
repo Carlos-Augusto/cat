@@ -7,8 +7,12 @@ import java.util.{ Base64, TimeZone }
 import com.flatmappable.util.Configs
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.codec.binary.Hex
+import org.json4s.jackson.Serialization
+import org.json4s.{ Formats, NoTypeHints }
 
 package object flatmappable extends LazyLogging {
+
+  implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
   val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
   val PATH_UPPs: Path = PATH_HOME.resolve(".sent_upps").normalize()

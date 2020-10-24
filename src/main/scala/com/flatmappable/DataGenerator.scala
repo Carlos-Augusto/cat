@@ -5,15 +5,13 @@ import java.security.MessageDigest
 import java.util.UUID
 
 import com.flatmappable.models.SimpleProtocolImpl
-import com.flatmappable.util.WithJsonFormats
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import com.ubirch.protocol.{ Protocol, ProtocolMessage }
 
 case class SimpleDataGeneration(UUID: UUID, upp: String, hash: String)
 
-class DataGenerator(uuid: UUID, clientKey: PrivKey)
-  extends WithJsonFormats with LazyLogging {
+class DataGenerator(uuid: UUID, clientKey: PrivKey) extends LazyLogging {
 
   val protocol = new SimpleProtocolImpl(uuid, clientKey)
 

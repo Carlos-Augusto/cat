@@ -13,7 +13,7 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.json4s.jackson.JsonMethods._
 
-object KeyRegistration extends RequestClient with WithJsonFormats with LazyLogging {
+object KeyRegistration extends RequestClient with LazyLogging {
 
   def pubKeyInfoData(clientUUID: UUID, df: SimpleDateFormat, sk: String) = {
     val now = System.currentTimeMillis()
