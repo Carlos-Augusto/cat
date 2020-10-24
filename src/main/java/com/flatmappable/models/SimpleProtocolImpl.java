@@ -11,8 +11,8 @@ import java.util.UUID;
 @SuppressWarnings("WeakerAccess")
 public class SimpleProtocolImpl extends Protocol {
 
-    private UUID clientUUID;
-    private PrivKey clientKey;
+    private final UUID clientUUID;
+    private final PrivKey clientKey;
     private byte[] lastSignature = null;
 
     public SimpleProtocolImpl(UUID clientUUID, PrivKey clientKey) {
