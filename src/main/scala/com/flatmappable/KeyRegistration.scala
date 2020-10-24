@@ -1,7 +1,6 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
 import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, TimeZone, UUID }
@@ -64,7 +63,7 @@ object KeyRegistration extends RequestClient with WithJsonFormats with LazyLoggi
 
     val info = compact(parse(pubKeyInfoData(UUID, df, publicKey)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
-    val data = compact(parse(registrationData(info, Base64.getEncoder.encodeToString(signature))))
+    val data = compact(parse(registrationData(info, toBase64AsString(signature))))
 
     val verification = clientKey.verify(info.getBytes, signature)
     val resp = callAsString(registerKeyRequest(data))

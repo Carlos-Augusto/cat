@@ -20,7 +20,7 @@ object DataSending extends RequestClient {
   }
 
   def send(uuid: UUID, password: String, hash: String, upp: String) = {
-    val response = call(sendKeyRequest(uuid, password, DataGenerator.toBytesFromHex(upp)))
+    val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp)))
 
     store(
       s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),

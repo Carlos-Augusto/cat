@@ -1,4 +1,5 @@
 package com.flatmappable.util
+
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.{ CloseableHttpClient, HttpClients }

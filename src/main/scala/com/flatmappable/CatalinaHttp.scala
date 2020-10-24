@@ -39,16 +39,16 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       val pass = request.headers.get("x-pass").flatMap(_.headOption).getOrElse(throw BadRequestException("No x-pass"))
 
       val (_, upp, hash) = DataGenerator.single(identity, body, privateKey, Protocol.Format.MSGPACK)
-      val res = DataSending.send(identity, pass, DataGenerator.toBase64(hash), DataGenerator.toHex(upp))
+      val res = DataSending.send(identity, pass, toBase64AsString(hash), toHex(upp))
 
       if (res.status >= 200 && res.status < 300) {
-        cask.Response(ResponseMessage(res.status, "Success", DataGenerator.toBase64(hash)).toJson, res.status)
+        cask.Response(ResponseMessage(res.status, "Success", toBase64AsString(hash)).toJson, res.status)
       } else if (res.status == 409) {
-        logger.error(s"UPP already known=${DataGenerator.toBase64(hash)} Status=${res.status}")
-        cask.Response(ResponseMessage(res.status, "KnownUPPError", DataGenerator.toBase64(hash)).toJson, res.status)
+        logger.error(s"UPP already known=${toBase64AsString(hash)} Status=${res.status}")
+        cask.Response(ResponseMessage(res.status, "KnownUPPError", toBase64AsString(hash)).toJson, res.status)
       } else {
-        logger.error(s"Error Sending UPP=${DataGenerator.toBase64(hash)} Status=${res.status}")
-        cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${DataGenerator.toBase64(hash)}").toJson, res.status)
+        logger.error(s"Error Sending UPP=${toBase64AsString(hash)} Status=${res.status}")
+        cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${toBase64AsString(hash)}").toJson, res.status)
       }
 
     } catch {

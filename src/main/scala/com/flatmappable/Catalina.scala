@@ -3,7 +3,7 @@ package com.flatmappable
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.util.{ Base64, UUID }
+import java.util.UUID
 
 import com.flatmappable.util.{ HttpHelpers, Timer }
 import com.typesafe.scalalogging.Logger
@@ -161,9 +161,9 @@ object Catalina {
             val (pmo, upp, hash) = DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
 
             logger.info("pm={}", pmo.toString)
-            logger.info("upp={}", Base64.getEncoder.encodeToString(Hex.decodeHex(upp)))
+            logger.info("upp={}", toBase64AsString(Hex.decodeHex(upp)))
             logger.info("upp={}", upp)
-            logger.info("signed={}", Base64.getEncoder.encodeToString(pmo.getSigned))
+            logger.info("signed={}", toBase64AsString(pmo.getSigned))
             logger.info("hash={}", hash)
 
             val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")

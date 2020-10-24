@@ -3,14 +3,13 @@ package com.flatmappable
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.util.{ Base64, UUID }
+import java.util.UUID
 
 import com.flatmappable.models.SimpleProtocolImpl
 import com.flatmappable.util.WithJsonFormats
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import com.ubirch.protocol.{ Protocol, ProtocolMessage }
-import org.apache.commons.codec.binary.Hex
 
 case class SimpleDataGeneration(UUID: UUID, upp: String, hash: String)
 
@@ -65,12 +64,6 @@ object DataGenerator {
     new DataGenerator(uuid, clientKey).single(data, format)
   }
 
-  def toBase64(data: Array[Byte]): String = Base64.getEncoder.encodeToString(data)
-
-  def toHex(data: Array[Byte]): String = Hex.encodeHexString(data)
-
-  def toBytesFromHex(data: String): Array[Byte] = Hex.decodeHex(data)
-
   def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: Array[Byte]): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     val hash = MessageDigest.getInstance("SHA-512").digest(data)
     val pm = new ProtocolMessage(ProtocolMessage.SIGNED, clientUUID, 0x00, hash)
@@ -87,12 +80,12 @@ object DataGenerator {
 
   def buildMessageFromInt(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, temp: Int, withNonce: Boolean): (ProtocolMessage, String, String) = {
     val (pm, upp, hash) = buildMessage(clientUUID, protocol, format, temp.toString, withNonce)
-    (pm, toHex(upp), toBase64(hash))
+    (pm, toHex(upp), toBase64AsString(hash))
   }
 
   def buildMessageFromString(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, String, String) = {
     val (pm, upp, hash) = buildMessage(clientUUID, protocol, format, data, withNonce)
-    (pm, toHex(upp), toBase64(hash))
+    (pm, toHex(upp), toBase64AsString(hash))
   }
 
 }
