@@ -15,7 +15,7 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey) extends LazyLogging {
 
   val protocol = new SimpleProtocolImpl(uuid, clientKey)
 
-  def generate(maxMessages: Int, format: Protocol.Format)(dump: (UUID, String, String) => Unit) = {
+  def generate(maxMessages: Int, format: Protocol.Format)(dump: (UUID, String, String) => Unit): Unit = {
     Iterator
       .continually {
         DataGenerator.buildMessageFromInt(uuid, protocol, format, (Math.random * 10 + 10).toInt, withNonce = true)
@@ -26,7 +26,7 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey) extends LazyLogging {
       }
   }
 
-  def toList(maxNumberOfMessages: Int, format: Protocol.Format) = {
+  def toList(maxNumberOfMessages: Int, format: Protocol.Format): List[SimpleDataGeneration] = {
     val buf = scala.collection.mutable.ListBuffer.empty[SimpleDataGeneration]
     generate(maxNumberOfMessages, format) { (uuid, upp, hash) =>
       buf += SimpleDataGeneration(uuid, upp, hash)
@@ -34,11 +34,11 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey) extends LazyLogging {
     buf.toList
   }
 
-  def single(data: String, format: Protocol.Format, withNonce: Boolean) = {
+  def single(data: String, format: Protocol.Format, withNonce: Boolean): (ProtocolMessage, String, String) = {
     DataGenerator.buildMessageFromString(uuid, protocol, format, data, withNonce)
   }
 
-  def single(data: Array[Byte], format: Protocol.Format) = {
+  def single(data: Array[Byte], format: Protocol.Format): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     DataGenerator.buildMessage(uuid, protocol, format, data)
   }
 
@@ -46,17 +46,17 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey) extends LazyLogging {
 
 object DataGenerator {
 
-  def generate(uuid: UUID, privateKey: String, format: Protocol.Format) = {
+  def generate(uuid: UUID, privateKey: String, format: Protocol.Format, maxNumberOfMessages: Int = 1): List[SimpleDataGeneration] = {
     val clientKey = KeyRegistration.getKey(privateKey)
-    new DataGenerator(uuid, clientKey).toList(1, format)
+    new DataGenerator(uuid, clientKey).toList(maxNumberOfMessages, format)
   }
 
-  def single(uuid: UUID, data: String, privateKey: String, format: Protocol.Format, withNonce: Boolean) = {
+  def single(uuid: UUID, data: String, privateKey: String, format: Protocol.Format, withNonce: Boolean): (ProtocolMessage, String, String) = {
     val clientKey = KeyRegistration.getKey(privateKey)
     new DataGenerator(uuid, clientKey).single(data, format, withNonce)
   }
 
-  def single(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format) = {
+  def single(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     val clientKey = KeyRegistration.getKey(privateKey)
     new DataGenerator(uuid, clientKey).single(data, format)
   }

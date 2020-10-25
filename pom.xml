@@ -51,7 +51,7 @@
         <scala.version>2.13.0</scala.version>
         <scala.compat.version>2.13</scala.compat.version>
         <scala-maven-plugin.version>3.4.2</scala-maven-plugin.version>
-        <scalatest.version>3.0.8</scalatest.version>
+        <scalatest.version>3.2.0</scalatest.version>
         <scala.logging.version>3.9.2</scala.logging.version>
         <scalariform.version>0.2.2</scalariform.version>
         <scalatest-maven-plugin.version>1.0</scalatest-maven-plugin.version>
@@ -153,6 +153,14 @@
             <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest-funsuite_${scala.compat.version}</artifactId>
+            <version>${scalatest.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 
