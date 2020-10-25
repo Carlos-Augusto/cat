@@ -9,7 +9,6 @@
 With this tool, you can interact with the core features of the _Ubirch Trust Platform_ (Cloud). 
 You are able to send micro-certificates from different sources, files, user input, fixed strings. 
 You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled.
-To modify the target stage or environment, run: export CAT_ENV=dev | demo | prod 
 
 This is a tool that allows to use the _Ubirch Trust Service_. This tool is a command line.
 Its features are:

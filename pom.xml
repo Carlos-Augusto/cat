@@ -305,6 +305,10 @@
                             <mainClass>com.flatmappable.Catalina</mainClass>
                             <id>catalina</id>
                         </program>
+                        <program>
+                            <mainClass>com.flatmappable.CatalinaHttp</mainClass>
+                            <id>catalina-http</id>
+                        </program>
                     </programs>
                 </configuration>
                 <executions>
