@@ -44,24 +44,27 @@ export CAT_ENV=dev
 
 To install the latest version: 
 
-Download 
+_Download_ 
 
 ```shell script
 curl -s https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}/install.sh
 ```
 
-Run script with best option for you.
-```shell script
-./install.sh -r
-```
+_Options_
 
-Options
 ```shell script
 install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
 -r -> will remove possible existing install
 -c -> will remove possible existing install on custom place
 -p -> will prompt if same install is found
 -e -> will prompt if same install is found and will install on custom place
+```
+
+_Example_
+
+Run script with best option for you.
+```shell script
+./install.sh -r
 ```
 
 ## Install from sources
