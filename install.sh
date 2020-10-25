@@ -40,7 +40,6 @@ function install() {
   ln -s ${INSTALL_FOLDER}/catalina-${VERSION}/bin/catalina ${SYMLINK}
   ln -s ${INSTALL_FOLDER}/catalina-${VERSION}/bin/catalina-http ${SYMLINK_HTTP}
 
-
   echo "-----------"
   echo "Run the CLI:"
   echo " $ catalina"

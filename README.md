@@ -67,6 +67,12 @@ Run script with best option for you.
 ./install.sh -r
 ```
 
+## Run the CLI
+
+```shell script
+$ catalina
+```
+
 ## Install from sources
 
 Clone the project
@@ -92,6 +98,33 @@ export PATH=$INSTALL_FOLDER:\$PATH"
 Run to see the options
 ```shell script
 ./catalina.sh
+```
+
+## Http Interface
+
+Catalina offers a simple http endpoint that can be used to create timestamps.
+Catalina runs on the port 8080
+
+### Run the HTTP interface:
+
+```shell script
+$ catalina-http
+```
+
+### Creating a Timestamp
+
+```
+POST
+----
+ http://localhost:8080/send/:uuid
+  where uuid is the device/identity id registered
+
+HEADERS
+-------
+x-pr: The private key that belongs to the identity.
+      It is the raw representation of the key, base64 encoded.
+x-pass: The password obtained when registering the identity.
+        The passwords should be base64 encoded.
 ```
 
 
