@@ -2,8 +2,7 @@
 set -e
 
 VERSION=0.0.4
-#URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
-URL=http://localhost:3000/
+URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
 INSTALL_FOLDER=/opt/catalina
 SYMLINK=/usr/bin/catalina
 SYMLINK_HTTP=/usr/bin/catalina-http
