@@ -69,4 +69,9 @@ package object flatmappable extends LazyLogging {
   def KNOWN_UPP: Int = CONFLICT
   def INTERNAL_SERVER_ERROR: Int = 500
 
+  def CONTENT_TYPE = "Content-Type"
+  def X_UBIRCH_HARDWARE_ID = "X-Ubirch-Hardware-Id"
+  def X_UBIRCH_AUTH_TYPE = "X-Ubirch-Auth-Type"
+  def X_UBIRCH_CREDENTIAL = "X-Ubirch-Credential"
+
 }

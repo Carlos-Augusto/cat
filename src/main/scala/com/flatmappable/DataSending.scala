@@ -9,11 +9,6 @@ import org.apache.http.entity.ByteArrayEntity
 
 object DataSending extends RequestClient {
 
-  def CONTENT_TYPE = "Content-Type"
-  def X_UBIRCH_HARDWARE_ID = "X-Ubirch-Hardware-Id"
-  def X_UBIRCH_AUTH_TYPE = "X-Ubirch-Auth-Type"
-  def X_UBIRCH_CREDENTIAL = "X-Ubirch-Credential"
-
   def sendKeyRequest(uuid: UUID, password: String, body: Array[Byte]) = {
     val regRequest = new HttpPost("https://niomon." + Configs.ENV + ".ubirch.com")
     regRequest.setHeader(CONTENT_TYPE, "application/octet-stream")
