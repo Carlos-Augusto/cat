@@ -2,7 +2,8 @@
 set -e
 
 VERSION=0.0.4
-URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
+#URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
+URL=http://localhost:3000/
 INSTALL_FOLDER=/opt/catalina
 SYMLINK=/usr/bin/catalina
 SYMLINK_HTTP=/usr/bin/catalina-http
@@ -39,6 +40,15 @@ function install() {
   downloadAndUnpack
   ln -s ${INSTALL_FOLDER}/catalina-${VERSION}/bin/catalina ${SYMLINK}
   ln -s ${INSTALL_FOLDER}/catalina-${VERSION}/bin/catalina-http ${SYMLINK_HTTP}
+
+
+  echo "-----------"
+  echo "Run the CLI:"
+  echo " $ catalina"
+
+  echo "-----------"
+  echo "Run the HTTP interface:"
+  echo " $ catalina-http"
 }
 
 function installRemoving() {
