@@ -2,6 +2,7 @@ package com
 
 import java.nio.file.{ Files, Path, Paths, StandardOpenOption }
 import java.text.SimpleDateFormat
+import java.time.Clock
 import java.util.{ Base64, TimeZone }
 
 import com.flatmappable.util.Configs
@@ -14,6 +15,8 @@ import org.json4s.{ Formats, JValue, NoTypeHints }
 package object flatmappable extends LazyLogging {
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
+
+  val clock: Clock = Clock.systemUTC
 
   val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
   val PATH_UPPs: Path = PATH_HOME.resolve(".sent_upps").normalize()
@@ -56,6 +59,8 @@ package object flatmappable extends LazyLogging {
       logger.info("Response Status: " + Console.RED + status + Console.RESET)
 
   }
+
+  def now: Long = clock.millis()
 
   def OK: Int = 200
   def MULTIPLE_CHOICE = 300

@@ -15,22 +15,41 @@ import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with LazyLogging {
 
-  def pubKeyInfoData(clientUUID: UUID, df: SimpleDateFormat, sk: String) = {
-    val now = System.currentTimeMillis()
+  def pubKeyInfoData(
+      algorithm: String,
+      created: String,
+      hwDeviceId: String,
+      pubKey: String,
+      pubKeyId: String,
+      validNotAfter: String,
+      validNotBefore: String
+  ): String = {
     s"""
-      |{
-      |   "algorithm": "ECC_ED25519",
-      |   "created": "${df.format(now)}",
-      |   "hwDeviceId": "${clientUUID.toString}",
-      |   "pubKey": "$sk",
-      |   "pubKeyId": "$sk",
-      |   "validNotAfter": "${df.format(now + 31557600000L)}",
-      |   "validNotBefore": "${df.format(now)}"
-      |}
+       |{
+       |   "algorithm": "$algorithm",
+       |   "created": "$created",
+       |   "hwDeviceId": "$hwDeviceId",
+       |   "pubKey": "$pubKey",
+       |   "pubKeyId": "$pubKeyId",
+       |   "validNotAfter": "$validNotAfter",
+       |   "validNotBefore": "$validNotBefore"
+       |}
     """.stripMargin
   }
 
-  def registrationData(pubKeyInfoData: String, signature: String) = {
+  def pubKeyInfoData(clientUUID: UUID, df: SimpleDateFormat, sk: String, created: Long): String = {
+    pubKeyInfoData(
+      algorithm = "ECC_ED25519",
+      created = df.format(created),
+      hwDeviceId = clientUUID.toString,
+      pubKey = sk,
+      pubKeyId = sk,
+      validNotAfter = df.format(created + 31557600000L),
+      validNotBefore = df.format(created)
+    )
+  }
+
+  def registrationData(pubKeyInfoData: String, signature: String): String = {
     s"""
       |{
       |   "pubKeyInfo": $pubKeyInfoData,
@@ -55,7 +74,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
 
     val clientKey = getKey(privateKey)
 
-    val info = compact(parse(pubKeyInfoData(UUID, defaultDataFormat, publicKey)))
+    val info = compact(parse(pubKeyInfoData(UUID, defaultDataFormat, publicKey, now)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
     val data = compact(parse(registrationData(info, toBase64AsString(signature))))
 
