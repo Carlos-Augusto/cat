@@ -21,7 +21,7 @@ mkdir -p ${INSTALL_FOLDER}
 
 function downloadAndUnpack() {
   echo "Downloading and unpacking files from "${URL}
-  curl -s ${URL}/catalina-${VERSION}-bin.tar.gz | tar xvz -C ${INSTALL_FOLDER}
+  curl -s -L ${URL}/catalina-${VERSION}-bin.tar.gz | tar xvz -C ${INSTALL_FOLDER}
 }
 
 function removeSymlinks() {
