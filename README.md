@@ -47,7 +47,13 @@ To install the latest version:
 _Download_ 
 
 ```shell script
-curl -s https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}/install.sh
+curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}/install.sh --output install.sh
+```
+
+_Make it executable_ 
+
+```shell script
+chmod +x install.sh
 ```
 
 _Options_
