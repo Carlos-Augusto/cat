@@ -37,9 +37,10 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       if (body.isEmpty) throw BadRequestException("Empty body")
       val privateKey = request.headers.get("x-pk").flatMap(_.headOption).getOrElse(throw BadRequestException("No x-pk"))
       val pass = request.headers.get("x-pass").flatMap(_.headOption).getOrElse(throw BadRequestException("No x-pass"))
+      val token = request.headers.get("x-token").flatMap(_.headOption).getOrElse(throw BadRequestException("No x-token"))
 
       val (_, upp, hash) = DataGenerator.single(identity, body, privateKey, Protocol.Format.MSGPACK)
-      val res = DataSending.send(identity, pass, toBase64AsString(hash), toHex(upp))
+      val res = DataSending.send(identity, pass, token, toBase64AsString(hash), toHex(upp))
 
       if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
         cask.Response(ResponseMessage(res.status, "Success", toBase64AsString(hash)).toJson, res.status)

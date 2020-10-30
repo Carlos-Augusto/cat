@@ -70,5 +70,6 @@ package object flatmappable extends LazyLogging {
   def X_UBIRCH_HARDWARE_ID = "X-Ubirch-Hardware-Id"
   def X_UBIRCH_AUTH_TYPE = "X-Ubirch-Auth-Type"
   def X_UBIRCH_CREDENTIAL = "X-Ubirch-Credential"
+  def X_TOKEN = "x-token"
 
 }

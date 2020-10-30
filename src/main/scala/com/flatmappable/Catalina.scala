@@ -104,7 +104,7 @@ object Catalina {
             logger.info("upp={}", x.upp)
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, x.hash, x.upp)
+              val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, token = "", hash = x.hash, upp = x.upp)
               printStatus(resp.status)
             }
           }
@@ -166,7 +166,7 @@ object Catalina {
             logger.info("signed={}", toBase64AsString(pmo.getSigned))
             logger.info("hash={}", hash)
 
-            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
+            val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, token = "", hash = hash, upp = upp), "UPP Sending")
             val resp = timedResp.getResult
 
             val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
