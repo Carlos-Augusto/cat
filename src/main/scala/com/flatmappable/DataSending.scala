@@ -10,7 +10,7 @@ import org.apache.http.entity.ByteArrayEntity
 object DataSending extends RequestClient {
 
   def sendKeyRequest(uuid: UUID, password: String, token: String, body: Array[Byte]) = {
-    val regRequest = new HttpPost("https://niomon." + Configs.ENV + ".ubirch.com")
+    val regRequest = new HttpPost("http://ubproxy.enchain.it:3000/ubproxy/api/v1/upp")
     regRequest.setHeader(CONTENT_TYPE, "application/octet-stream")
     regRequest.setHeader(X_UBIRCH_HARDWARE_ID, uuid.toString)
     regRequest.setHeader(X_UBIRCH_AUTH_TYPE, "ubirch")
