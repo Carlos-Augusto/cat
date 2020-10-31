@@ -40,14 +40,14 @@ To modify this, export the following variable. The following are the expected va
 export CAT_ENV=dev 
 ```
 
-## Install
+## Install Latest Version
 
 To install the latest version: ![List of releases](https://github.com/Carlos-Augusto/cat/releases)
 
 _Download_ 
 
 ```shell script
-curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}/install.sh --output install.sh
+curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.4/install.sh --output install.sh
 ```
 
 _Make it executable_ 
