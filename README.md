@@ -42,7 +42,7 @@ export CAT_ENV=dev
 
 ## Install
 
-To install the latest version: 
+To install the latest version: ![List of releases](https://github.com/Carlos-Augusto/cat/releases)
 
 _Download_ 
 
@@ -131,6 +131,14 @@ x-pr: The private key that belongs to the identity.
       It is the raw representation of the key, base64 encoded.
 x-pass: The password obtained when registering the identity.
         The passwords should be base64 encoded.
+Content-Type: Although not explicitily needed, you usually would use
+ 'text/plain' for simple texts  
+ 'application/octet-stream' for binary data
+ 'application/json' for json format
+
+BODY
+----
+The body should contain the data that you would like to anchor.
 ```
 
 
