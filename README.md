@@ -42,25 +42,25 @@ To modify this, export the following variable. The following are the expected va
 export CAT_ENV=dev 
 ```
 
-### DATA FOLDER
+### Data Folder
 
 ```
 export CAT_DATA_FOLDER=$HOME 
 ```
 
-### DATA SENDING URL
+### Data Sending Url
 
 ```
 export CAT_DATA_SENDING_URL=https://ubproxy.enchain.it/ubproxy/api/v1/upp 
 ```
 
-### KEY REGISTRATION URL
+### Key Registration Url
 
 ```
 export CAT_KEY_REGISTRATION_URL=https://key.dev.ubirch.com/api/keyService/v1/pubkey 
 ```
 
-### VERIFICATION BASE URL
+### Verification Base Url
 
 ```
 export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
@@ -68,7 +68,7 @@ export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
 
 ## Install Latest Version
 
-To install the latest version: ![List of releases](https://github.com/Carlos-Augusto/cat/releases)
+To install the latest version: [List of releases](https://github.com/Carlos-Augusto/cat/releases)
 
 _Download_ 
 
