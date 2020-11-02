@@ -34,15 +34,47 @@ you would like to have.
 For every one of these feature, you can set the stage at which the system will point to on the _Ubirch Platform_ [dev, demo, prod]
 By default dev wil be used. 
 
+### Ubirch Stage
+
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
 
 ```
 export CAT_ENV=dev 
 ```
 
+### Data Folder
+
+```
+export CAT_DATA_FOLDER=$HOME 
+```
+
+### Http Port
+
+```
+export CAT_HTTP_PORT=8080 
+```
+
+### Data Sending Url
+
+```
+export CAT_DATA_SENDING_URL=https://ubproxy.enchain.it/ubproxy/api/v1/upp 
+```
+
+### Key Registration Url
+
+```
+export CAT_KEY_REGISTRATION_URL=https://key.dev.ubirch.com/api/keyService/v1/pubkey 
+```
+
+### Verification Base Url
+
+```
+export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
+```
+
 ## Install Latest Version
 
-To install the latest version: ![List of releases](https://github.com/Carlos-Augusto/cat/releases)
+To install the latest version: [List of releases](https://github.com/Carlos-Augusto/cat/releases)
 
 _Download_ 
 
@@ -130,7 +162,12 @@ HEADERS
 x-pr: The private key that belongs to the identity.
       It is the raw representation of the key, base64 encoded.
 x-pass: The password obtained when registering the identity.
-        The passwords should be base64 encoded.
+        The passwords should be BASE64 encoded.
+x-proxy-HEADER-NAME: If you need to redirect especific headers to the sending 
+        destination, you can use this header. Just put the header you need to 
+        redirect together with the x-proxy and the value. The system will take these
+        headers and plug them into the request to the sending service.
+
 Content-Type: Although not explicitily needed, you usually would use
  'text/plain' for simple texts  
  'application/octet-stream' for binary data
@@ -141,4 +178,8 @@ BODY
 The body should contain the data that you would like to anchor.
 ```
 
+#### Example
 
+```shell script
+curl -s -X POST -H 'x-pk:PRIV_KEY' -H 'x-pass:BASE64_PASS' -d 'HELLO WORLD' http://localhost:8080/send/7A44acd5-91e1-4230-833a-2f386e09b96f
+```

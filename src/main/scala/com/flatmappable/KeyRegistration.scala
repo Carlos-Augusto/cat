@@ -58,14 +58,14 @@ object KeyRegistration extends RequestClient with LazyLogging {
     """.stripMargin
   }
 
-  def registerKeyRequest(body: String) = {
-    val regRequest = new HttpPost("https://key." + Configs.ENV + ".ubirch.com/api/keyService/v1/pubkey")
+  def registerKeyRequest(body: String): HttpPost = {
+    val regRequest = new HttpPost(Configs.KEY_REGISTRATION_URL)
     regRequest.setHeader(CONTENT_TYPE, "application/json")
     regRequest.setEntity(new StringEntity(body))
     regRequest
   }
 
-  def getKey(privateKey: String) = {
+  def getKey(privateKey: String): PrivKey = {
     val clientKeyBytes = Base64.getDecoder.decode(privateKey)
     createClientKey(clientKeyBytes)
   }

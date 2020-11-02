@@ -91,7 +91,7 @@ object Catalina {
           "You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled. \n\n" +
           "To modify the target stage or environment , run: export CAT_ENV=dev | demo | prod ")
       )
-      .version("0.0.4")
+      .version("0.0.5")
       .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
 
         case Some(GenerateRandomTimestamp) =>
@@ -104,7 +104,7 @@ object Catalina {
             logger.info("upp={}", x.upp)
             logger.info("hash={}", x.hash)
             if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-              val resp = DataSending.send(x.UUID, GenerateRandomTimestamp.password, x.hash, x.upp)
+              val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, hash = x.hash, upp = x.upp)
               printStatus(resp.status)
             }
           }
@@ -166,7 +166,7 @@ object Catalina {
             logger.info("signed={}", toBase64AsString(pmo.getSigned))
             logger.info("hash={}", hash)
 
-            val timedResp = Timer.time(DataSending.send(CreateTimestamp.uuid, CreateTimestamp.password, hash, upp), "UPP Sending")
+            val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = hash, upp = upp), "UPP Sending")
             val resp = timedResp.getResult
 
             val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)

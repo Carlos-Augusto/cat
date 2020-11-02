@@ -27,7 +27,10 @@ package object flatmappable extends LazyLogging {
     _df
   }
 
-  def init(): Unit = {
+  def init(http: Boolean = false): Unit = {
+    if (http) {
+      logger.info("Port={}", Configs.CAT_HTTP_PORT)
+    }
     logger.info("Environment={}", Configs.ENV)
     if (!PATH_HOME.toFile.exists()) {
       logger.info("Creating home=" + PATH_HOME.toFile.toString)
