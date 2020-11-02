@@ -34,10 +34,36 @@ you would like to have.
 For every one of these feature, you can set the stage at which the system will point to on the _Ubirch Platform_ [dev, demo, prod]
 By default dev wil be used. 
 
+### Ubirch Stage
+
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
 
 ```
 export CAT_ENV=dev 
+```
+
+### DATA FOLDER
+
+```
+export CAT_DATA_FOLDER=$HOME 
+```
+
+### DATA SENDING URL
+
+```
+export CAT_DATA_SENDING_URL=https://ubproxy.enchain.it/ubproxy/api/v1/upp 
+```
+
+### KEY REGISTRATION URL
+
+```
+export CAT_KEY_REGISTRATION_URL=https://key.dev.ubirch.com/api/keyService/v1/pubkey 
+```
+
+### VERIFICATION BASE URL
+
+```
+export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
 ```
 
 ## Install Latest Version
@@ -131,6 +157,11 @@ x-pr: The private key that belongs to the identity.
       It is the raw representation of the key, base64 encoded.
 x-pass: The password obtained when registering the identity.
         The passwords should be base64 encoded.
+x-proxy-HEADER-NAME: If you need to redirect especific headers to the sending 
+        destination, you can use this header. Just put the header you need to 
+        redirect together with the x-proxy and the value. The system will take these
+        headers and plug them into the request to the sending service.
+
 Content-Type: Although not explicitily needed, you usually would use
  'text/plain' for simple texts  
  'application/octet-stream' for binary data
