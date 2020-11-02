@@ -2,6 +2,7 @@ package com.flatmappable
 
 import java.util.UUID
 
+import com.flatmappable.util.Configs
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.protocol.Protocol
 import ujson.Obj
@@ -10,7 +11,7 @@ import scala.util.Try
 
 object CatalinaHttp extends cask.MainRoutes with LazyLogging {
 
-  init()
+  init(http = true)
 
   case class BadRequestException(message: String) extends Exception(message)
 
@@ -26,7 +27,19 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
 
   @cask.get("/")
   def hello() = {
-    "This is Catalina."
+    """
+      |
+      |
+      |   |\      _,,,---,,_
+      |   /,`.-'`'    -.  ;-;;,_
+      |  |,4-  ) )-,_..;\ (  `'-'
+      | '---''(_/--'  `-'\_)  Felix Lee <flee@cse.psu.edu>
+      |
+      |------------------------------------------------
+      |Thank you for visiting https://asciiart.website/
+      |This ASCII pic can be found at
+      |https://asciiart.website/index.php?art=animals/cats
+      |""".stripMargin
   }
 
   @cask.post("/send/:uuid")
@@ -66,7 +79,7 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
     }
   }
 
-  override def port: Int = 8080
+  override def port: Int = Configs.CAT_HTTP_PORT
 
   override def host: String = "0.0.0.0"
 

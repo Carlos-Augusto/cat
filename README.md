@@ -48,6 +48,12 @@ export CAT_ENV=dev
 export CAT_DATA_FOLDER=$HOME 
 ```
 
+### Http Port
+
+```
+export CAT_HTTP_PORT=8080 
+```
+
 ### Data Sending Url
 
 ```
@@ -156,7 +162,7 @@ HEADERS
 x-pr: The private key that belongs to the identity.
       It is the raw representation of the key, base64 encoded.
 x-pass: The password obtained when registering the identity.
-        The passwords should be base64 encoded.
+        The passwords should be BASE64 encoded.
 x-proxy-HEADER-NAME: If you need to redirect especific headers to the sending 
         destination, you can use this header. Just put the header you need to 
         redirect together with the x-proxy and the value. The system will take these
@@ -172,4 +178,8 @@ BODY
 The body should contain the data that you would like to anchor.
 ```
 
+#### Example
 
+```shell script
+curl -s -X POST -H 'x-pk:PRIV_KEY' -H 'x-pass:BASE64_PASS' -d 'HELLO WORLD' http://localhost:8080/send/7A44acd5-91e1-4230-833a-2f386e09b96f
+```

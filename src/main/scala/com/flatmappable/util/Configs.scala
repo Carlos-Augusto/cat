@@ -6,6 +6,7 @@ object Configs {
   final val conf: Config = ConfigFactory.load()
   final val ENV: String = conf.getString("environment")
   final val DATA_FOLDER: String = conf.getString("dataFolder")
+  final val CAT_HTTP_PORT: Int = conf.getInt("catHttpPort")
   final val DATA_SENDING_URL: String = conf.getString("dataSendingUrl")
   final val KEY_REGISTRATION_URL: String = conf.getString("keyRegistrationUrl")
   final val SIMPLE_VERIFICATION_URL: String = conf.getString("simpleVerificationUrl")
