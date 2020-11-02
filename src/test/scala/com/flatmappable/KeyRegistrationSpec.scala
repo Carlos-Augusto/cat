@@ -25,6 +25,7 @@ class KeyRegistrationSpec extends AnyFunSuite {
     val req = KeyRegistration.registerKeyRequest(data)
     val headers = req.getAllHeaders.toList
 
+    assert(req.getURI.toString == "https://key.dev.ubirch.com/api/keyService/v1/pubkey")
     assert(headers.find(_.getName == CONTENT_TYPE).exists(_.getValue == "application/json"))
     assert(EntityUtils.toString(req.getEntity) == data)
 
