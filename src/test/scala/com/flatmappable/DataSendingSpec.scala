@@ -17,6 +17,7 @@ class DataSendingSpec extends AnyFunSuite {
     val req = DataSending.sendKeyRequest(uuid, pass, data, extraHeaders)
     val headers = req.getAllHeaders.toList
 
+    assert(req.getURI.toString == "https://niomon.dev.ubirch.com")
     assert(headers.size == 7)
     assert(headers.find(_.getName == CONTENT_TYPE).exists(_.getValue == "application/octet-stream"))
     assert(headers.find(_.getName == X_UBIRCH_CREDENTIAL).exists(_.getValue == pass))
