@@ -9,3 +9,4 @@ project/target
 **/package-lock.json
 /gatling-results
 bin
+venv

@@ -2,7 +2,7 @@ package com.flatmappable
 
 import java.util.UUID
 
-import com.flatmappable.util.Configs
+import com.flatmappable.util.{ Configs, JsonHelper }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.protocol.Protocol
 import ujson.Obj
@@ -56,7 +56,32 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
         .map { case (k, v) => (k.replaceFirst("x-proxy-", "").trim, v.toSeq.map(_.trim)) }
         .filter { case (k, v) => k.nonEmpty && v.forall(_.nonEmpty) }
 
-      val (_, upp, hash) = DataGenerator.single(identity, body, privateKey, Protocol.Format.MSGPACK)
+      val contentType = request.headers
+        .filter { case (k, _) => k.startsWith("content-type") }
+        .flatMap { case (_, v) => v }
+        .headOption
+
+      val (asString, asBytes) = contentType.collect {
+        case "application/json" =>
+          request.headers
+            .get("x-json-format")
+            .flatMap(_.headOption)
+            .collect {
+              case "compact" => JsonHelper.compact(body)
+              case "pretty" => JsonHelper.pretty(body)
+              case "none" => JsonHelper.compact(body)
+                .map(_ => ("", body))
+            }
+            .getOrElse(JsonHelper.compact(body))
+      }
+        .getOrElse(Right("", body))
+        .getOrElse(throw BadRequestException("Body is malformed"))
+
+      if (asString.nonEmpty) {
+        logger.info("body={}", asString)
+      }
+
+      val (_, upp, hash) = DataGenerator.single(identity, asBytes, privateKey, Protocol.Format.MSGPACK)
       val res = DataSending.send(identity, pass, toBase64AsString(hash), toHex(upp), headersToRedirect)
 
       if (res.status >= OK && res.status < MULTIPLE_CHOICE) {

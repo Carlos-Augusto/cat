@@ -60,6 +60,13 @@ package object flatmappable extends LazyLogging {
 
   }
 
+  def closableTry[A, B](resource: => A)(cleanup: A => Unit)(code: A => B): Either[Exception, B] = {
+    try {
+      val r = resource
+      try { Right(code(r)) } finally { cleanup(r) }
+    } catch { case e: Exception => Left(e) }
+  }
+
   def now: Long = clock.millis()
 
   def OK: Int = 200
