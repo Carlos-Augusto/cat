@@ -42,6 +42,16 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       |""".stripMargin
   }
 
+  @cask.get("/configs")
+  def configs() = {
+    s"""
+       |- ENV: ${Configs.ENV}
+       |- PORT: ${Configs.CAT_HTTP_PORT}
+       |- HOST: ${host}
+       |- DATA_SENDING_URL:${Configs.DATA_SENDING_URL}
+       |""".stripMargin
+  }
+
   @cask.post("/send/:uuid")
   def send(uuid: String, request: cask.Request) = {
     try {
