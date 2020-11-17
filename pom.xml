@@ -77,6 +77,13 @@
             <version>0.7.5</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.lihaoyi/requests -->
+        <dependency>
+            <groupId>com.lihaoyi</groupId>
+            <artifactId>requests_${scala.compat.version}</artifactId>
+            <version>0.6.5</version>
+        </dependency>
+
         <dependency>
             <groupId>org.backuity.clist</groupId>
             <artifactId>clist-core_${scala.compat.version}</artifactId>

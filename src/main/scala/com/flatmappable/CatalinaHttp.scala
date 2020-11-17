@@ -2,14 +2,15 @@ package com.flatmappable
 
 import java.util.UUID
 
-import com.flatmappable.util.{ Configs, JsonHelper }
+import cask.model.Response
+import com.flatmappable.util.{ Configs, JsonHelper, ResponseData }
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.protocol.Protocol
 import ujson.Obj
 
 import scala.util.Try
 
-object CatalinaHttp extends cask.MainRoutes with LazyLogging {
+abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
 
   init(http = true)
 
@@ -26,7 +27,7 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
   }
 
   @cask.get("/")
-  def hello() = {
+  def hello(): String = {
     """
       |
       |
@@ -51,10 +52,14 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
      |""".stripMargin
 
   @cask.get("/configs")
-  def configs() = _configs
+  def configs(): String = _configs
+
+  def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+    DataSending.send(uuid, password, toBase64AsString(hash), toHex(upp), extraHeaders)
+  }
 
   @cask.post("/send/:uuid")
-  def send(uuid: String, request: cask.Request) = {
+  def send(uuid: String, request: cask.Request): Response[Obj] = {
     try {
       val identity = Try(UUID.fromString(uuid)).getOrElse(throw BadRequestException("Invalid uuid"))
       val body = request.bytes
@@ -93,7 +98,7 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
       }
 
       val (_, upp, hash) = DataGenerator.single(identity, asBytes, privateKey, Protocol.Format.MSGPACK)
-      val res = DataSending.send(identity, pass, toBase64AsString(hash), toHex(upp), headersToRedirect)
+      val res = sendData(identity, pass, hash, upp, headersToRedirect)
 
       if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
         cask.Response(ResponseMessage(res.status, "Success", toBase64AsString(hash)).toJson, res.status)
@@ -120,4 +125,7 @@ object CatalinaHttp extends cask.MainRoutes with LazyLogging {
   override def host: String = "0.0.0.0"
 
   initialize()
+
 }
+
+object CatalinaHttp extends CatalinaHttpBase
