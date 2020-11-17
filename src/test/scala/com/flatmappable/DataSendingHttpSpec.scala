@@ -2,10 +2,9 @@ package com.flatmappable
 
 import java.util.UUID
 
-import com.flatmappable.util.ResponseData
 import io.undertow.Undertow
 import org.scalatest.funsuite.AnyFunSuite
-import requests.RequestFailedException
+import requests.{ RequestFailedException, headers }
 
 import scala.util.Try
 
@@ -46,15 +45,11 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
-  class Cat() extends CatalinaHttpBase {
-    override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
-      ResponseData(200, Array.empty, hash)
-    }
-  }
-
   test("CatalinaHttp.send should fail when no body is sent") {
 
-    withServer(new Cat()) { host =>
+    val cat = new CatalinaHttpBase {}
+
+    withServer(cat) { host =>
 
       val uuid = UUID.randomUUID()
 
@@ -64,6 +59,73 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
       assert(res.statusCode == 400)
       assert(res.text() == """{"status":400,"message":"BadRequest","data":"Empty body"}""")
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should fail when no proper x-pk is present") {
+
+    val cat = new CatalinaHttpBase {}
+
+    withServer(cat) { host =>
+
+      val uuid = UUID.randomUUID()
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(s"$host/send/$uuid", data = data))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 400)
+      assert(res.text() == """{"status":400,"message":"BadRequest","data":"No x-pk"}""")
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should fail when no proper x-pass is present") {
+
+    val cat = new CatalinaHttpBase {}
+
+    withServer(cat) { host =>
+
+      val uuid = UUID.randomUUID()
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(s"$host/send/$uuid", data = data, headers = Map("x-pk" -> "1234567")))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 400)
+      assert(res.text() == """{"status":400,"message":"BadRequest","data":"No x-pass"}""")
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should fail when invalid keys") {
+
+    val cat = new CatalinaHttpBase {}
+
+    withServer(cat) { host =>
+
+      val uuid = UUID.randomUUID()
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/$uuid",
+        data = data,
+        headers = Map("x-pk" -> "1234567", "x-pass" -> "12345678")
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 500)
+      assert(res.text() == """{"status":500,"message":"InternalError","data":""}""")
 
     }
 
