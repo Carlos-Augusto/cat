@@ -54,7 +54,25 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
   @cask.get("/configs")
   def configs(): String = _configs
 
-  def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+  protected def sendBody(contentType: Option[String], headers: Map[String, scala.collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+    contentType.collect {
+      case "application/json" =>
+        headers
+          .get("x-json-format")
+          .flatMap(_.headOption)
+          .collect {
+            case "compact" => JsonHelper.compact(body)
+            case "pretty" => JsonHelper.pretty(body)
+            case "none" => JsonHelper.compact(body)
+              .map(_ => ("", body))
+          }
+          .getOrElse(JsonHelper.compact(body))
+    }
+      .getOrElse(Right("", body))
+      .getOrElse(throw BadRequestException("Body is malformed"))
+  }
+
+  protected def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
     DataSending.send(uuid, password, toBase64AsString(hash), toHex(upp), extraHeaders)
   }
 
@@ -71,28 +89,14 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
         .filter { case (k, v) => k.startsWith("x-proxy-") && v.forall(_.nonEmpty) }
         .map { case (k, v) => (k.replaceFirst("x-proxy-", "").trim, v.toSeq.map(_.trim)) }
         .filter { case (k, v) => k.nonEmpty && v.forall(_.nonEmpty) }
-        .filterNot { case (k, v) => k.endsWith("-") || k.startsWith("-") }
+        .filterNot { case (k, _) => k.endsWith("-") || k.startsWith("-") }
 
       val contentType = request.headers
         .filter { case (k, _) => k.startsWith("content-type") }
         .flatMap { case (_, v) => v }
         .headOption
 
-      val (asString, asBytes) = contentType.collect {
-        case "application/json" =>
-          request.headers
-            .get("x-json-format")
-            .flatMap(_.headOption)
-            .collect {
-              case "compact" => JsonHelper.compact(body)
-              case "pretty" => JsonHelper.pretty(body)
-              case "none" => JsonHelper.compact(body)
-                .map(_ => ("", body))
-            }
-            .getOrElse(JsonHelper.compact(body))
-      }
-        .getOrElse(Right("", body))
-        .getOrElse(throw BadRequestException("Body is malformed"))
+      val (asString, asBytes) = sendBody(contentType, request.headers, body)
 
       if (asString.nonEmpty) {
         logger.info("body={}", asString)

@@ -159,7 +159,7 @@ class DataSendingHttpSpec extends AnyFunSuite {
   }
 
 
-  test("CatalinaHttp.send should forwarded x-proxy headers") {
+  test("CatalinaHttp.send should forward x-proxy headers") {
 
     val cat = new CatalinaHttpBase {
       override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
@@ -191,6 +191,177 @@ class DataSendingHttpSpec extends AnyFunSuite {
         .get
 
       assert(res.statusCode == 200)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect json content type header but no formatting option") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data =
+        """
+          |{
+          |   "cities":[
+          |      "New York",
+          |      "Bangalore",
+          |      "San Francisco"
+          |   ],
+          |   "name":"Pankaj Kumar",
+          |   "age":32
+          |}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+         )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      val expected = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      assert(res.statusCode == 200)
+      assert(processed == expected)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect json content type header but no formatting option 2") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect json content type header but no formatting option 3") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"cities": ["New York","Bangalore","San Francisco"], "name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+
+      val expected = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+      assert(res.statusCode == 200)
+      assert(processed == expected)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect json content type header and invalid json") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"cities": ["New York""Bangalore","San Francisco"], "name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+
+      assert(res.statusCode == 400)
+      assert(res.text() == """{"status":400,"message":"BadRequest","data":"Body is malformed"}""")
 
     }
 
