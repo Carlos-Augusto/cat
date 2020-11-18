@@ -71,6 +71,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
         .filter { case (k, v) => k.startsWith("x-proxy-") && v.forall(_.nonEmpty) }
         .map { case (k, v) => (k.replaceFirst("x-proxy-", "").trim, v.toSeq.map(_.trim)) }
         .filter { case (k, v) => k.nonEmpty && v.forall(_.nonEmpty) }
+        .filterNot { case (k, v) => k.endsWith("-") || k.startsWith("-") }
 
       val contentType = request.headers
         .filter { case (k, _) => k.startsWith("content-type") }

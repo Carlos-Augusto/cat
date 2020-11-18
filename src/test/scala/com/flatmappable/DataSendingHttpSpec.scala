@@ -132,7 +132,7 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
-  test("CatalinaHttp.send should fail wh") {
+  test("CatalinaHttp.send should fail when not authorized") {
 
     val cat = new CatalinaHttpBase {
       override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
@@ -153,6 +153,44 @@ class DataSendingHttpSpec extends AnyFunSuite {
         .get
 
       assert(res.statusCode == 401)
+
+    }
+
+  }
+
+
+  test("CatalinaHttp.send should forwarded x-proxy headers") {
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        extraHeaders.find { case (k, v) => k == "x-token" && v == Seq("this is an OK token") }.map { _ =>
+          ResponseData(200, Array.empty, Array.empty[Byte])
+        }.getOrElse(ResponseData(500, Array.empty, Array.empty[Byte]))
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "x-proxy-x-token" -> "this is an OK token",
+          "x-proxy-x-" -> "this is a NOT OK token",
+          "x-proxy--" -> "this is a NOT OK token",
+          "x-proxy---" -> "this is a NOT OK token",
+          "x-proxy-x-aaa" -> "",
+          "x-proxy-x-bbb" -> " "
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
 
     }
 
