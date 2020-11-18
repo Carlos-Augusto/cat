@@ -1,5 +1,6 @@
 package com.flatmappable
 
+import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 import cask.model.Response
@@ -64,7 +65,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
             case "compact" => JsonHelper.compact(body)
             case "pretty" => JsonHelper.pretty(body)
             case "none" => JsonHelper.compact(body)
-              .map(_ => ("", body))
+              .map(_ => (new String(body, StandardCharsets.UTF_8), body))
           }
           .getOrElse(JsonHelper.compact(body))
     }
