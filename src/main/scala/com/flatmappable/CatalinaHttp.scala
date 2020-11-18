@@ -105,6 +105,9 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
       } else if (res.status == KNOWN_UPP) {
         logger.error(s"UPP already known=${toBase64AsString(hash)} Status=${res.status}")
         cask.Response(ResponseMessage(res.status, "KnownUPPError", toBase64AsString(hash)).toJson, res.status)
+      } else if (res.status == UNAUTHORIZED) {
+        logger.error(s"UPP was rejected=${toBase64AsString(hash)} Status=${res.status}")
+        cask.Response(ResponseMessage(res.status, "Unauthorized", toBase64AsString(hash)).toJson, res.status)
       } else {
         logger.error(s"Error Sending UPP=${toBase64AsString(hash)} Status=${res.status}")
         cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${toBase64AsString(hash)}").toJson, res.status)

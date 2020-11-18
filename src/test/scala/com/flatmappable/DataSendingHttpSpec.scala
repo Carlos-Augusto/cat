@@ -2,6 +2,7 @@ package com.flatmappable
 
 import java.util.UUID
 
+import com.flatmappable.util.ResponseData
 import io.undertow.Undertow
 import org.scalatest.funsuite.AnyFunSuite
 import requests.{ RequestFailedException, headers }
@@ -126,6 +127,32 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
       assert(res.statusCode == 500)
       assert(res.text() == """{"status":500,"message":"InternalError","data":""}""")
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should fail wh") {
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(401, Array.empty, Array.empty)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"cities":["New York","Bangalore","San Francisco"],"name":"Pankaj Kumar","age":32}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map("x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=", "x-pass" -> "12345678")
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 401)
 
     }
 

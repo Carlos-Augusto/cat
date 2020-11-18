@@ -72,6 +72,7 @@ package object flatmappable extends LazyLogging {
   def OK: Int = 200
   def MULTIPLE_CHOICE = 300
   def BAD_REQUEST = 400
+  def UNAUTHORIZED = 401
   def CONFLICT = 409
   def KNOWN_UPP: Int = CONFLICT
   def INTERNAL_SERVER_ERROR: Int = 500
