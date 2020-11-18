@@ -46,6 +46,23 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
+  test("CatalinaHttp.send should fail when invalid uuid is detected") {
+
+    val cat = new CatalinaHttpBase {}
+
+    withServer(cat) { host =>
+
+      val res = Try(requests.post(s"$host/send/123456"))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 400)
+      assert(res.text() == """{"status":400,"message":"BadRequest","data":"Invalid uuid"}""")
+
+    }
+
+  }
+
   test("CatalinaHttp.send should fail when no body is sent") {
 
     val cat = new CatalinaHttpBase {}
