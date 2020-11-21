@@ -167,11 +167,21 @@ x-proxy-HEADER-NAME: If you need to redirect especific headers to the sending
         destination, you can use this header. Just put the header you need to 
         redirect together with the x-proxy and the value. The system will take these
         headers and plug them into the request to the sending service.
-
-Content-Type: Although not explicitily needed, you usually would use
- 'text/plain' for simple texts  
+Content-Type: Although not explicitily needed, you usually would use ->
+ 'text/plain'               for simple texts  
  'application/octet-stream' for binary data
- 'application/json' for json format
+ 'application/json'         for json format
+
+x-json-format: When using a content type 'application/json', you can also pass this header to better 
+               control the formatting of the incoming json value. ->
+ 'compact' to format the incoming value in a compacted fashion.
+ 'pretty'  to format the incoming value in a more verbose, prettier fashion
+ 'none'    to not perform any formatting
+
+Note:
+ that when the content type is json, the system checks to see if the value is a valid json value.
+ that when by default the formatting option is 'none'
+      
 
 BODY
 ----
