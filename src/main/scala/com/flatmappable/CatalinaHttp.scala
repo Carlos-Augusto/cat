@@ -1,6 +1,6 @@
 package com.flatmappable
 
-import java.nio.charset.StandardCharsets
+import java.nio.charset.{ Charset, StandardCharsets }
 import java.util.UUID
 
 import cask.model.Response
@@ -56,7 +56,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
   @cask.get("/configs")
   def configs(): String = _configs
 
-  protected def sendBody(contentType: Option[String], headers: Map[String, scala.collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+  protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, scala.collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
     contentType.collect {
       case "application/json" =>
         headers
@@ -71,7 +71,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
               .toEither
           }
           .getOrElse(JsonHelper.compact(body))
-      case "text/plain" => Try(new String(body, StandardCharsets.UTF_8), body).toEither
+      case "text/plain" => Try(new String(body, charset.getOrElse(StandardCharsets.UTF_8)), body).toEither
     }
       .getOrElse(Right("", body))
       .getOrElse(throw BadRequestException("Body is malformed"))
@@ -96,12 +96,9 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
         .filter { case (k, v) => k.nonEmpty && v.forall(_.nonEmpty) }
         .filterNot { case (k, _) => k.endsWith("-") || k.startsWith("-") }
 
-      val contentType = request.headers
-        .filter { case (k, _) => k.startsWith("content-type") }
-        .flatMap { case (_, v) => v }
-        .headOption
+      val (contentType, charset) = getContentType(request.headers)
 
-      val (asString, asBytes) = sendBody(contentType, request.headers, body)
+      val (asString, asBytes) = sendBody(contentType, charset, request.headers, body)
 
       if (asString.nonEmpty) {
         logger.info("body={}", asString)
@@ -130,6 +127,39 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
       case e: Exception =>
         logger.error("Internal error", e)
         cask.Response(ResponseMessage(INTERNAL_SERVER_ERROR, "InternalError").toJson, INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  def getContentType(headers: Map[String, scala.collection.Seq[String]]): (Option[String], Option[Charset]) = {
+    val contentTypeAndCharset = headers
+      .filter { case (k, _) => k.startsWith("content-type") }
+      .flatMap { case (_, v) => v }
+      .flatMap { v =>
+        v.split(";", 2)
+          .toList
+          .map(_.replaceAll(" ", ""))
+          .map(_.trim)
+      }
+      .toList
+
+    contentTypeAndCharset match {
+      case List(ct, cs) if cs.toLowerCase.startsWith("charset") =>
+
+        (Some(ct), Try(cs.split("=", 2).toList)
+          .map(_.reverse)
+          .map(_.headOption).map {
+            case Some("US-ASCII") => StandardCharsets.US_ASCII
+            case Some("ISO-8859-1") => StandardCharsets.ISO_8859_1
+            case Some("UTF-8") => StandardCharsets.UTF_8
+            case Some("UTF-16BE") => StandardCharsets.UTF_16BE
+            case Some("UTF-16LE") => StandardCharsets.UTF_16LE
+            case Some("UTF-16") => StandardCharsets.UTF_16
+            case Some(_) => StandardCharsets.UTF_8
+            case None => StandardCharsets.UTF_8
+          }.toOption)
+
+      case List(ct) => (Some(ct), None)
+      case _ => (None, None)
     }
   }
 

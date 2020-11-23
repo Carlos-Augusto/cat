@@ -1,5 +1,6 @@
 package com.flatmappable
 
+import java.nio.charset.{ Charset, StandardCharsets }
 import java.util.UUID
 
 import com.flatmappable.util.ResponseData
@@ -221,8 +222,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -272,8 +273,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -311,8 +312,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -382,8 +383,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -422,8 +423,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -463,8 +464,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -512,8 +513,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -551,8 +552,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -590,8 +591,8 @@ class DataSendingHttpSpec extends AnyFunSuite {
         ResponseData(200, Array.empty, Array.empty[Byte])
       }
 
-      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
-        val (a, b) = super.sendBody(contentType, headers, body)
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
         processed = a
         (a, b)
       }
@@ -613,6 +614,45 @@ class DataSendingHttpSpec extends AnyFunSuite {
           "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
           "x-pass" -> "12345678",
           "content-type" -> "text/plain"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect text with charset") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = "hola"
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data.getBytes(StandardCharsets.US_ASCII),
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "text/plain; charset=US-ASCII"
         )
       ))
         .recover { case e: RequestFailedException => e.response }
