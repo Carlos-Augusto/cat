@@ -66,9 +66,12 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
             case "compact" => JsonHelper.compact(body)
             case "pretty" => JsonHelper.pretty(body)
             case "none" => JsonHelper.compact(body)
+              .toTry
               .map(_ => (new String(body, StandardCharsets.UTF_8), body))
+              .toEither
           }
           .getOrElse(JsonHelper.compact(body))
+      case "text/plain" => Try(new String(body, StandardCharsets.UTF_8), body).toEither
     }
       .getOrElse(Right("", body))
       .getOrElse(throw BadRequestException("Body is malformed"))

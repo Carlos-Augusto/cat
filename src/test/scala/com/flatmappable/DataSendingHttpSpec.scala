@@ -503,4 +503,126 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
+  test("CatalinaHttp.send should detect json with maybe special character") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"data":"verfügbar, nämlich"}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect text with maybe special character") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"data":"verfügbar, nämlich"}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "text/plain"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect text") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data =
+        """
+          |Ein Automobil, kurz Auto (auch Kraftwagen, in der Schweiz amtlich Motorwagen), ist ein mehrspuriges Kraftfahrzeug (also ein von einem Motor angetriebenes Straßenfahrzeug), das zur Beförderung von Personen (Personenkraftwagen „Pkw“ und Bus) oder Frachtgütern (Lastkraftwagen „Lkw“) dient. Umgangssprachlich – und auch in diesem Artikel – werden mit dem Begriff Auto meist Fahrzeuge bezeichnet, deren Bauart überwiegend zur Personenbeförderung bestimmt ist und die mit einem Automobil-Führerschein auf öffentlichem Verkehrsgrund geführt werden dürfen.
+          |
+          |Der weltweite Fahrzeugbestand steigt kontinuierlich an und lag im Jahr 2010 bei über 1,015 Milliarden Automobilen. 2011 wurden weltweit über 80 Millionen Automobile gebaut. In Deutschland waren im Jahr 2012 etwa 51,7 Millionen Kraftfahrzeuge zugelassen, davon sind knapp 43 Millionen Personenkraftwagen.
+          |""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "text/plain"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
 }
