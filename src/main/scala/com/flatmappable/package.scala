@@ -13,7 +13,7 @@ import org.json4s.{ Formats, NoTypeHints }
 
 package object flatmappable extends LazyLogging {
 
-  final val version = "0.0.5"
+  final val version = "0.0.6"
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
