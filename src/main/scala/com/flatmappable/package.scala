@@ -13,6 +13,8 @@ import org.json4s.{ Formats, NoTypeHints }
 
 package object flatmappable extends LazyLogging {
 
+  final val version = "0.0.5"
+
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
   val clock: Clock = Clock.systemUTC
@@ -60,11 +62,19 @@ package object flatmappable extends LazyLogging {
 
   }
 
+  def closableTry[A, B](resource: => A)(cleanup: A => Unit)(code: A => B): Either[Exception, B] = {
+    try {
+      val r = resource
+      try { Right(code(r)) } finally { cleanup(r) }
+    } catch { case e: Exception => Left(e) }
+  }
+
   def now: Long = clock.millis()
 
   def OK: Int = 200
   def MULTIPLE_CHOICE = 300
   def BAD_REQUEST = 400
+  def UNAUTHORIZED = 401
   def CONFLICT = 409
   def KNOWN_UPP: Int = CONFLICT
   def INTERNAL_SERVER_ERROR: Int = 500

@@ -3,14 +3,14 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
-            <pattern>cat=> %msg%n</pattern>
+            <pattern>[%d{ISO8601}] cat=> %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.err</target>
         <encoder>
-            <pattern>cat (err) => %msg%n</pattern>
+            <pattern>[%d{ISO8601}] cat (err) => %msg%n</pattern>
         </encoder>
     </appender>
 
