@@ -1,14 +1,12 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.security.{ InvalidKeyException, NoSuchAlgorithmException }
 import java.text.SimpleDateFormat
 import java.util.{ Base64, UUID }
 
 import com.flatmappable.util._
 import com.typesafe.scalalogging.LazyLogging
-import com.ubirch.crypto.utils.Curve
-import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
+import com.ubirch.crypto.PrivKey
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.json4s.jackson.JsonMethods._
@@ -67,7 +65,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
 
   def getKey(privateKey: String): PrivKey = {
     val clientKeyBytes = Base64.getDecoder.decode(privateKey)
-    createClientKey(clientKeyBytes)
+    KeyPairHelper.privateKeyEd25519(clientKeyBytes)
   }
 
   def register(UUID: UUID, publicKey: String, privateKey: String) = {
@@ -84,22 +82,12 @@ object KeyRegistration extends RequestClient with LazyLogging {
     (info, data, verification, resp)
   }
 
-  def logOutput(info: String, data: String, verification: Boolean, resp: ResponseData[String]) = {
+  def logOutput(info: String, data: String, verification: Boolean, resp: ResponseData[String]): Unit = {
     logger.info("Info: " + info)
     logger.info("Data: " + data)
     logger.info("Verification: " + verification.toString)
     logger.info("Response: " + resp.body)
     printStatus(resp.status)
-  }
-
-  def createClientKey(clientKeyBytes: Array[Byte]): PrivKey = {
-    try
-      GeneratorKeyFactory.getPrivKey(clientKeyBytes, Curve.Ed25519)
-    catch {
-      case e @ (_: NoSuchAlgorithmException | _: InvalidKeyException) =>
-        logger.error("Missing or broken CLIENT_KEY (base64)")
-        throw e
-    }
   }
 
   def newRegistration(uuid: UUID) = {
