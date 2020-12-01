@@ -103,7 +103,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
   }
 
   def newRegistration(uuid: UUID) = {
-    val (key, pubKey, privKey) = KeyPairHelper.createKeysAsString(KeyPairHelper.privateKey)
+    val (key, pubKey, privKey) = KeyPairHelper.asString(KeyPairHelper.privateKeyEd25519)
     val response = KeyRegistration.register(uuid, pubKey, privKey)
 
     store(

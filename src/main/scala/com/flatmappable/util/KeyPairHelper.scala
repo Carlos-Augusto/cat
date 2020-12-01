@@ -6,15 +6,16 @@ import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
 
 object KeyPairHelper {
 
-  def privateKey = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
+  def privateKeyEd25519: PrivKey = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
 
-  def createKeys = createKeysAsString(privateKey)
+  def privateKeyPRIME256V1: PrivKey = GeneratorKeyFactory.getPrivKey(Curve.PRIME256V1)
 
-  def createKeysAsString(pk: PrivKey) = {
-    val fullprivKey = toBase64AsString(pk.getPrivateKey.getEncoded)
-    val privKey = toBase64AsString(pk.getRawPrivateKey.slice(0, 32))
-    val pubKey = toBase64AsString(pk.getRawPublicKey.slice(0, 32))
-    (fullprivKey, pubKey, privKey)
+  def asString(pk: PrivKey): (String, String, String) = {
+    (
+      toBase64AsString(pk.getPrivateKey.getEncoded),
+      toBase64AsString(pk.getRawPrivateKey),
+      toBase64AsString(pk.getRawPublicKey)
+    )
   }
 
 }
