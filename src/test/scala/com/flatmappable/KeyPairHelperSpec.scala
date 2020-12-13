@@ -46,6 +46,7 @@ class KeyPairHelperSpec extends AnyFunSuite {
     assert(util.Arrays.equals(cc, k.getRawPublicKey))
 
     assert(aa.size == 150)
+    assert(bb.size == 32 || bb.size == 33) // for when there is padding
     assert(cc.size == 64)
 
     val kk = GeneratorKeyFactory.getPrivKey(bb, Curve.PRIME256V1)
