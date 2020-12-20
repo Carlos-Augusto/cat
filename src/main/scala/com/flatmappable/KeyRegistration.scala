@@ -13,6 +13,9 @@ import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with LazyLogging {
 
+  def ECC_ECDSA = "ECC_ECDSA"
+  def ECC_ED25519 = "ECC_ED25519"
+
   def pubKeyInfoData(
       algorithm: String,
       created: String,
@@ -35,15 +38,15 @@ object KeyRegistration extends RequestClient with LazyLogging {
     """.stripMargin
   }
 
-  def pubKeyInfoData(clientUUID: UUID, df: SimpleDateFormat, sk: String, created: Long): String = {
+  def pubKeyInfoData(clientUUID: UUID, algorithm: String, sk: String, created: Long): String = {
     pubKeyInfoData(
-      algorithm = "ECC_ED25519",
-      created = df.format(created),
+      algorithm = algorithm,
+      created = defaultDataFormat.format(created),
       hwDeviceId = clientUUID.toString,
       pubKey = sk,
       pubKeyId = sk,
-      validNotAfter = df.format(created + 31557600000L),
-      validNotBefore = df.format(created)
+      validNotAfter = defaultDataFormat.format(created + 31557600000L),
+      validNotBefore = defaultDataFormat.format(created)
     )
   }
 
@@ -72,7 +75,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
 
     val clientKey = getKey(privateKey)
 
-    val info = compact(parse(pubKeyInfoData(UUID, defaultDataFormat, publicKey, now)))
+    val info = compact(parse(pubKeyInfoData(UUID, ECC_ED25519, publicKey, now)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
     val data = compact(parse(registrationData(info, toBase64AsString(signature))))
 
