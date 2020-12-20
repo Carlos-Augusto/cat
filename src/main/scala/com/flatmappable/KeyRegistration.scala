@@ -1,10 +1,10 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.text.SimpleDateFormat
 import java.util.{ Base64, UUID }
 
 import com.flatmappable.util._
+import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import org.apache.http.client.methods.HttpPost
@@ -13,11 +13,11 @@ import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with LazyLogging {
 
-  def ECC_ECDSA = "ECC_ECDSA"
-  def ECC_ED25519 = "ECC_ED25519"
+  def ECC_ECDSA: Symbol = Symbol("ECC_ECDSA")
+  def ECC_ED25519: Symbol = Symbol("ECC_ED25519")
 
   def pubKeyInfoData(
-      algorithm: String,
+      algorithm: Symbol,
       created: String,
       hwDeviceId: String,
       pubKey: String,
@@ -27,7 +27,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
   ): String = {
     s"""
        |{
-       |   "algorithm": "$algorithm",
+       |   "algorithm": "${algorithm.name}",
        |   "created": "$created",
        |   "hwDeviceId": "$hwDeviceId",
        |   "pubKey": "$pubKey",
@@ -38,7 +38,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
     """.stripMargin
   }
 
-  def pubKeyInfoData(clientUUID: UUID, algorithm: String, sk: String, created: Long): String = {
+  def pubKeyInfoData(clientUUID: UUID, algorithm: Symbol, sk: String, created: Long): String = {
     pubKeyInfoData(
       algorithm = algorithm,
       created = defaultDataFormat.format(created),
@@ -66,45 +66,49 @@ object KeyRegistration extends RequestClient with LazyLogging {
     regRequest
   }
 
+  def create(key: String): ResponseData[String] = {
+    callAsString(registerKeyRequest(key))
+  }
+
   def getKey(privateKey: String): PrivKey = {
     val clientKeyBytes = Base64.getDecoder.decode(privateKey)
     KeyPairHelper.privateKeyEd25519(clientKeyBytes)
   }
 
-  def register(UUID: UUID, publicKey: String, privateKey: String) = {
-
-    val clientKey = getKey(privateKey)
-
-    val info = compact(parse(pubKeyInfoData(UUID, ECC_ED25519, publicKey, now)))
+  def createKey(uuid: UUID, algo: Symbol = ECC_ED25519, clientKey: PrivKey = KeyPairHelper.privateKeyEd25519, created: Long = now) = {
+    val pubKey = clientKey.getRawPublicKeyAsString
+    val info = compact(parse(pubKeyInfoData(uuid, algo, pubKey, created)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
     val data = compact(parse(registrationData(info, toBase64AsString(signature))))
-
     val verification = clientKey.verify(info.getBytes, signature)
-    val resp = callAsString(registerKeyRequest(data))
 
-    (info, data, verification, resp)
-  }
+    if (!verification) throw new Exception("Key creation validation failed")
 
-  def logOutput(info: String, data: String, verification: Boolean, resp: ResponseData[String]): Unit = {
-    logger.info("Info: " + info)
-    logger.info("Data: " + data)
-    logger.info("Verification: " + verification.toString)
-    logger.info("Response: " + resp.body)
-    printStatus(resp.status)
+    (clientKey, ECC_ED25519, info, data)
+
   }
 
   def newRegistration(uuid: UUID) = {
-    val (key, pubKey, privKey) = KeyPairHelper.asString(KeyPairHelper.privateKeyEd25519)
-    val response = register(uuid, pubKey, privKey)
+
+    val (clientKey, algo, info, data) = createKey(uuid)
+    val (key, pubKey, privKey) = clientKey.asString
+
+    val response = create(data)
 
     store(
-      s"${Configs.ENV},$uuid,ECC_ED25519,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8),
+      s"${Configs.ENV},$uuid,$algo,$pubKey,$privKey,$key\n".getBytes(StandardCharsets.UTF_8),
       PATH_KEYS,
-      response._4.status
+      response.status
     )
 
-    (key, pubKey, privKey, response)
+    (key, pubKey, privKey, (info, data, response))
+  }
 
+  def logOutput(info: String, data: String, resp: ResponseData[String]): Unit = {
+    logger.info("Info: " + info)
+    logger.info("Data: " + data)
+    logger.info("Response: " + resp.body)
+    printStatus(resp.status)
   }
 
 }

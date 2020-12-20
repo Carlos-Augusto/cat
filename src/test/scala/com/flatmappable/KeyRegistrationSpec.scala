@@ -1,7 +1,8 @@
 package com.flatmappable
 
-import java.util.UUID
+import com.flatmappable.util.KeyPairHelper
 
+import java.util.UUID
 import org.apache.http.util.EntityUtils
 import org.json4s.jackson.JsonMethods._
 import org.scalatest.funsuite.AnyFunSuite
@@ -28,6 +29,12 @@ class KeyRegistrationSpec extends AnyFunSuite {
     assert(req.getURI.toString == "https://key.dev.ubirch.com/api/keyService/v1/pubkey")
     assert(headers.find(_.getName == CONTENT_TYPE).exists(_.getValue == "application/json"))
     assert(EntityUtils.toString(req.getEntity) == data)
+
+  }
+
+  test("create key with crypt tool") {
+    val uuid = UUID.fromString("387e9ac2-b1bc-4bdb-92b8-f3a279daa9c6")
+    assert(KeyRegistration.createKey(uuid, clientKey = KeyPairHelper.privateKeyEd25519)._1 != null)
 
   }
 

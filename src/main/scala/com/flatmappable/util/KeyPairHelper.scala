@@ -12,12 +12,19 @@ object KeyPairHelper {
   def privateKeyPRIME256V1(key: Array[Byte]): PrivKey = GeneratorKeyFactory.getPrivKey(key, Curve.PRIME256V1)
   def privateKeyPRIME256V1: PrivKey = GeneratorKeyFactory.getPrivKey(Curve.PRIME256V1)
 
-  def asString(pk: PrivKey): (String, String, String) = {
-    (
-      toBase64AsString(pk.getPrivateKey.getEncoded),
-      toBase64AsString(pk.getRawPrivateKey),
-      toBase64AsString(pk.getRawPublicKey)
-    )
+  implicit class EnrichedPrivKey(pk: PrivKey) {
+
+    def getPrivateKeyAsString: String = toBase64AsString(pk.getPrivateKey.getEncoded)
+    def getRawPublicKeyAsString: String = toBase64AsString(pk.getRawPublicKey)
+    def getRawPrivateKeyAsString: String = toBase64AsString(pk.getRawPrivateKey)
+
+    def asString: (String, String, String) = {
+      (
+        getPrivateKeyAsString,
+        getRawPrivateKeyAsString,
+        getRawPublicKeyAsString
+      )
+    }
   }
 
 }
