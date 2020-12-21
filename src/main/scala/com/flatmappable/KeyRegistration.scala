@@ -13,9 +13,6 @@ import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with LazyLogging {
 
-  def ECC_ECDSA: Symbol = Symbol("ECC_ECDSA")
-  def ECC_ED25519: Symbol = Symbol("ECC_ED25519")
-
   def pubKeyInfoData(
       algorithm: Symbol,
       created: String,
@@ -75,7 +72,12 @@ object KeyRegistration extends RequestClient with LazyLogging {
     KeyPairHelper.privateKeyEd25519(clientKeyBytes)
   }
 
-  def createKey(uuid: UUID, algo: Symbol = ECC_ED25519, clientKey: PrivKey = KeyPairHelper.privateKeyEd25519, created: Long = now) = {
+  def createKey(
+      uuid: UUID,
+      algo: Symbol = KeyPairHelper.ECC_ED25519,
+      clientKey: PrivKey = KeyPairHelper.privateKeyEd25519,
+      created: Long = now
+  ): (PrivKey, String, String) = {
     val pubKey = clientKey.getRawPublicKeyAsString
     val info = compact(parse(pubKeyInfoData(uuid, algo, pubKey, created)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
@@ -84,13 +86,14 @@ object KeyRegistration extends RequestClient with LazyLogging {
 
     if (!verification) throw new Exception("Key creation validation failed")
 
-    (clientKey, ECC_ED25519, info, data)
+    (clientKey, info, data)
 
   }
 
-  def newRegistration(uuid: UUID) = {
+  def newRegistration(uuid: UUID, algo: Symbol = KeyPairHelper.ECC_ED25519) = {
 
-    val (clientKey, algo, info, data) = createKey(uuid)
+    val clientKey = KeyPairHelper.getClientKey(algo)
+    val (_, info, data) = createKey(uuid, algo = algo, clientKey = clientKey)
     val (key, pubKey, privKey) = clientKey.asString
 
     val response = create(data)
