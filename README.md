@@ -111,6 +111,9 @@ Run script with best option for you.
 $ catalina
 ```
 
+You can use the options as they show up. In case you are interested in checking what version you are running,
+you can use the version command (_catalina version_)
+
 ## Install from sources
 
 Clone the project
@@ -193,3 +196,7 @@ The body should contain the data that you would like to anchor.
 ```shell script
 curl -s -X POST -H 'x-pk:PRIV_KEY' -H 'x-pass:BASE64_PASS' -d 'HELLO WORLD' http://localhost:8080/send/7A44acd5-91e1-4230-833a-2f386e09b96f
 ```
+
+### Checking Configs
+
+You can check the current configs by visiting: [http://localhost:8080/configs](http://localhost:8080/configs)
