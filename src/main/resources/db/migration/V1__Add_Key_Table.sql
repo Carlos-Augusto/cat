@@ -1,5 +1,6 @@
 create table key_row(
   id text primary key,
+  env text,
   uuid text,
   algo text,
   priv_key text,

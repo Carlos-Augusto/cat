@@ -4,7 +4,7 @@ import com.typesafe.config.{ Config, ConfigFactory }
 
 object Configs {
   final val conf: Config = ConfigFactory.load()
-  final val ENV: String = conf.getString("environment")
+  final val ENV: Symbol = Symbol(conf.getString("environment"))
   final val DATA_FOLDER: String = conf.getString("dataFolder")
   final val CAT_HTTP_PORT: Int = conf.getInt("catHttpPort")
   final val DATA_SENDING_URL: String = conf.getString("dataSendingUrl")

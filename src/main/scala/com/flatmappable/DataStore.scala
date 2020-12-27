@@ -12,6 +12,9 @@ trait CustomEncodingsBase {
   implicit def encodeUUID = MappedEncoding[UUID, String](Option(_).map(_.toString).getOrElse(""))
   implicit def decodeUUID = MappedEncoding[String, UUID](x => UUID.fromString(x))
 
+  implicit def encodeSymbol = MappedEncoding[Symbol, String](Option(_).map(_.name).getOrElse(""))
+  implicit def decodeSymbol = MappedEncoding[String, Symbol](x => Symbol(x))
+
 }
 
 trait KeyRowDAO extends CustomEncodingsBase {
@@ -20,7 +23,7 @@ trait KeyRowDAO extends CustomEncodingsBase {
 
   import context._
 
-  case class KeyRow(id: UUID, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String)
+  case class KeyRow(id: UUID, env: Symbol, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String)
 
   object KeyRow {
 

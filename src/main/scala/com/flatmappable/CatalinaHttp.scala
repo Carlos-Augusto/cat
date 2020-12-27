@@ -47,7 +47,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
   private lazy val _configs: String =
     s"""
      |- VERSION: $version
-     |- ENV: ${Configs.ENV}
+     |- ENV: ${Configs.ENV.name}
      |- PORT: ${Configs.CAT_HTTP_PORT}
      |- HOST: $host
      |- DATA_SENDING_URL:${Configs.DATA_SENDING_URL}

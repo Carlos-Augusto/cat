@@ -33,7 +33,7 @@ package object flatmappable extends DataStore with LazyLogging {
     if (http) {
       logger.info("Port={}", Configs.CAT_HTTP_PORT)
     }
-    logger.info("Environment={}", Configs.ENV)
+    logger.info("Environment={}", Configs.ENV.name)
     if (!PATH_HOME.toFile.exists()) {
       logger.info("Creating home=" + PATH_HOME.toFile.toString)
       Files.createDirectory(PATH_HOME)

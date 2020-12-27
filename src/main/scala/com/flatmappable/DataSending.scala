@@ -28,7 +28,7 @@ object DataSending extends RequestClient {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
     store(
-      s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
+      s"${Configs.ENV.name},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
       PATH_UPPs,
       response.status
     )
