@@ -4,7 +4,7 @@
 
     <groupId>com.flatmappable</groupId>
     <artifactId>catalina</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -80,7 +80,7 @@
         <!-- https://mvnrepository.com/artifact/io.getquill/quill-jdbc -->
         <dependency>
             <groupId>io.getquill</groupId>
-            <artifactId>quill-jdbc-monix_${scala.compat.version}</artifactId>
+            <artifactId>quill-jdbc_${scala.compat.version}</artifactId>
             <version>3.5.3</version>
         </dependency>
 

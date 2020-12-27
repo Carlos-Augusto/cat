@@ -1,10 +1,8 @@
 package com.flatmappable
 
 import com.flatmappable.util.Configs
-import io.getquill.{ MappedEncoding, SnakeCase, SqliteDialect, SqliteMonixJdbcContext }
-import io.getquill.context.monix.MonixJdbcContext.Runner
+import io.getquill.{ MappedEncoding, SnakeCase, SqliteDialect, SqliteJdbcContext }
 import io.getquill.context.sql.SqlContext
-import monix.eval.Task
 import org.flywaydb.core.Flyway
 
 import java.util.UUID
@@ -37,7 +35,7 @@ trait KeyRowDAO extends CustomEncodingsBase {
   }
 
   trait KeyRowQueries {
-    def insert(keyRow: KeyRow): Task[Long]
+    def insert(keyRow: KeyRow): Long
   }
 
 }
@@ -52,12 +50,12 @@ trait DBMigration {
 }
 
 trait DataStore extends KeyRowDAO with DBMigration {
-  override val context = new SqliteMonixJdbcContext(SnakeCase, "db", Runner.default)
+  override val context = new SqliteJdbcContext(SnakeCase, "db")
 
   import context._
 
   object KeyRowQueriesImp extends KeyRowQueries {
-    override def insert(keyRow: KeyRow): Task[Long] = context.run(KeyRow.insertQ(lift(keyRow)))
+    override def insert(keyRow: KeyRow): Long = context.run(KeyRow.insertQ(lift(keyRow)))
   }
 
 }

@@ -11,9 +11,9 @@ import org.apache.commons.codec.binary.Hex
 import org.json4s.jackson.Serialization
 import org.json4s.{ Formats, NoTypeHints }
 
-package object flatmappable extends LazyLogging {
+package object flatmappable extends DataStore with LazyLogging {
 
-  final val version = "0.0.6"
+  final val version = "0.0.7"
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
@@ -40,6 +40,11 @@ package object flatmappable extends LazyLogging {
     } else {
       logger.info("home exists=" + PATH_HOME.toFile.getCanonicalPath)
     }
+
+    if (pending()) {
+      migrate()
+    }
+
   }
 
   def store(dataToStore: Array[Byte], path: Path, responseStatus: Int): Unit = {
