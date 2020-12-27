@@ -1,6 +1,6 @@
 package com
 
-import java.nio.file.{ Files, Path, Paths, StandardOpenOption }
+import java.nio.file.{ Files, Path, Paths }
 import java.text.SimpleDateFormat
 import java.time.Clock
 import java.util.{ Base64, TimeZone }
@@ -20,8 +20,6 @@ package object flatmappable extends DataStore with LazyLogging {
   val clock: Clock = Clock.systemUTC
 
   val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
-  val PATH_UPPs: Path = PATH_HOME.resolve(".sent_upps").normalize()
-  val PATH_KEYS: Path = PATH_HOME.resolve(".keys").normalize()
 
   val defaultDataFormat: SimpleDateFormat = {
     val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -42,15 +40,9 @@ package object flatmappable extends DataStore with LazyLogging {
     }
 
     if (pending()) {
-      migrate()
+      val _ = migrate()
     }
 
-  }
-
-  def store(dataToStore: Array[Byte], path: Path, responseStatus: Int): Unit = {
-    if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
-      Files.write(path, dataToStore, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
-    }
   }
 
   def toBase64AsString(data: Array[Byte]): String = Base64.getEncoder.encodeToString(data)

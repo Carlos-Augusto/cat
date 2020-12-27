@@ -1,6 +1,5 @@
 package com.flatmappable
 
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 import com.flatmappable.util.{ Configs, RequestClient, ResponseData }
@@ -27,11 +26,7 @@ object DataSending extends RequestClient {
   def send(uuid: UUID, password: String, hash: String, upp: String, extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
-    store(
-      s"${Configs.ENV.name},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
-      PATH_UPPs,
-      response.status
-    )
+    TimestampRowQueriesImp.insert(TimestampRow(UUID.randomUUID(), Configs.ENV, uuid, hash, upp))
 
     response
   }

@@ -1,7 +1,7 @@
 package com.flatmappable
 
 import com.flatmappable.util.Configs
-import io.getquill.{ MappedEncoding, SnakeCase, SqliteDialect, SqliteJdbcContext }
+import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import io.getquill.context.sql.SqlContext
 import org.flywaydb.core.Flyway
 
@@ -27,10 +27,6 @@ trait KeyRowDAO extends CustomEncodingsBase {
 
   object KeyRow {
 
-    val key = quote {
-      query[KeyRow]
-    }
-
     val insertQ = quote {
       (k: KeyRow) => query[KeyRow].insert(k)
     }
@@ -39,6 +35,28 @@ trait KeyRowDAO extends CustomEncodingsBase {
 
   trait KeyRowQueries {
     def insert(keyRow: KeyRow): Long
+  }
+
+}
+
+trait TimestampRowDAO extends CustomEncodingsBase {
+
+  val context: SqlContext[_, _]
+
+  import context._
+
+  case class TimestampRow(id: UUID, env: Symbol, uuid: UUID, hash: String, upp: String)
+
+  object TimestampRow {
+
+    val insertQ = quote {
+      (t: TimestampRow) => query[TimestampRow].insert(t)
+    }
+
+  }
+
+  trait TimestampRowQueries {
+    def insert(timestampRow: TimestampRow): Long
   }
 
 }
@@ -52,13 +70,17 @@ trait DBMigration {
 
 }
 
-trait DataStore extends KeyRowDAO with DBMigration {
+trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
   override val context = new SqliteJdbcContext(SnakeCase, "db")
 
   import context._
 
   object KeyRowQueriesImp extends KeyRowQueries {
     override def insert(keyRow: KeyRow): Long = context.run(KeyRow.insertQ(lift(keyRow)))
+  }
+
+  object TimestampRowQueriesImp extends TimestampRowQueries {
+    override def insert(timestampRow: TimestampRow): Long = context.run(TimestampRow.insertQ(lift(timestampRow)))
   }
 
 }
