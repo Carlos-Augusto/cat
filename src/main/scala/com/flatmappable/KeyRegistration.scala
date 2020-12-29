@@ -3,8 +3,8 @@ package com.flatmappable
 import java.nio.charset.StandardCharsets
 import java.util.{ Base64, Date, UUID }
 
-import com.flatmappable.util._
 import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
+import com.flatmappable.util._
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import org.apache.http.client.methods.HttpPost

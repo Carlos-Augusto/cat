@@ -1,6 +1,7 @@
 package com.flatmappable
 
 import java.util.{ Date, UUID }
+
 import com.flatmappable.util.{ Configs, RequestClient, ResponseData }
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ByteArrayEntity

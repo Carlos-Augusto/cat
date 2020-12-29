@@ -1,12 +1,12 @@
 package com.flatmappable
 
+import java.util.{ Date, UUID }
+
 import com.flatmappable.util.Configs
 import com.typesafe.config.{ Config, ConfigValueFactory }
-import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import io.getquill.context.sql.SqlContext
+import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import org.flywaydb.core.Flyway
-
-import java.util.{ Date, UUID }
 
 trait CustomEncodingsBase {
 
