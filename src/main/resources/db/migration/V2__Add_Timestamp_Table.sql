@@ -3,5 +3,6 @@ create table timestamp_row(
   env text,
   uuid text,
   hash text,
-  upp text
+  upp text,
+  created_at text
 );

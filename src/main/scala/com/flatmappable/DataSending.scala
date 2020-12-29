@@ -1,7 +1,6 @@
 package com.flatmappable
 
-import java.util.UUID
-
+import java.util.{ Date, UUID }
 import com.flatmappable.util.{ Configs, RequestClient, ResponseData }
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ByteArrayEntity
@@ -26,7 +25,7 @@ object DataSending extends RequestClient {
   def send(uuid: UUID, password: String, hash: String, upp: String, extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
-    TimestampRowQueriesImp.insert(TimestampRow(UUID.randomUUID(), Configs.ENV, uuid, hash, upp))
+    TimestampRowQueriesImp.insert(TimestampRow(UUID.randomUUID(), Configs.ENV, uuid, hash, upp, new Date()))
 
     response
   }

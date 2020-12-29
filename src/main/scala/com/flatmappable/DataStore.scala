@@ -6,7 +6,7 @@ import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import io.getquill.context.sql.SqlContext
 import org.flywaydb.core.Flyway
 
-import java.util.UUID
+import java.util.{ Date, UUID }
 
 trait CustomEncodingsBase {
 
@@ -24,7 +24,7 @@ trait KeyRowDAO extends CustomEncodingsBase {
 
   import context._
 
-  case class KeyRow(id: UUID, env: Symbol, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String)
+  case class KeyRow(id: UUID, env: Symbol, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String, createdAt: Date)
 
   object KeyRow {
 
@@ -46,7 +46,7 @@ trait TimestampRowDAO extends CustomEncodingsBase {
 
   import context._
 
-  case class TimestampRow(id: UUID, env: Symbol, uuid: UUID, hash: String, upp: String)
+  case class TimestampRow(id: UUID, env: Symbol, uuid: UUID, hash: String, upp: String, createdAt: Date)
 
   object TimestampRow {
 

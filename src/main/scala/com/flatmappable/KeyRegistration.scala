@@ -1,7 +1,7 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.util.{ Base64, UUID }
+import java.util.{ Base64, Date, UUID }
 
 import com.flatmappable.util._
 import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
@@ -105,7 +105,8 @@ object KeyRegistration extends RequestClient with LazyLogging {
       algo = algo.toString(),
       privKey = key,
       rawPrivKey = privKey,
-      rawPubKey = pubKey
+      rawPubKey = pubKey,
+      new Date()
     ))
 
     (key, pubKey, privKey, (info, data, response))
