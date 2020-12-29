@@ -13,15 +13,15 @@ import org.json4s.{ Formats, NoTypeHints }
 
 package object flatmappable extends DataStore with LazyLogging {
 
-  final val version = "0.0.7"
-
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
-  val clock: Clock = Clock.systemUTC
+  final val version = "0.0.7"
 
-  val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
+  final val clock: Clock = Clock.systemUTC
 
-  val defaultDataFormat: SimpleDateFormat = {
+  final val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
+
+  final val defaultDataFormat: SimpleDateFormat = {
     val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     _df.setTimeZone(TimeZone.getTimeZone("UTC"))
     _df

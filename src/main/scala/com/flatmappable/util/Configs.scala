@@ -13,5 +13,5 @@ object Configs {
   final val INITIAL_VERIFICATION_URL: String = conf.getString("initialVerificationUrl")
   final val UPPER_VERIFICATION_URL: String = conf.getString("upperVerificationUrl")
   final val FULL_VERIFICATION_URL: String = conf.getString("fullVerificationUrl")
-  final val DB_JDBC_URL: String = conf.getString("db.jdbcUrl")
+  final val DB_CONFIG: Config = conf.getConfig("db")
 }

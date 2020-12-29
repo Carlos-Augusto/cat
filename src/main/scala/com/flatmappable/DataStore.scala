@@ -1,6 +1,7 @@
 package com.flatmappable
 
 import com.flatmappable.util.Configs
+import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import io.getquill.context.sql.SqlContext
 import org.flywaydb.core.Flyway
@@ -62,7 +63,8 @@ trait TimestampRowDAO extends CustomEncodingsBase {
 }
 
 trait DBMigration {
-  private val flyway: Flyway = Flyway.configure.dataSource(Configs.DB_JDBC_URL, "", "").load
+
+  def flyway: Flyway
 
   def migrate() = flyway.migrate()
   def info() = flyway.info()
@@ -71,7 +73,12 @@ trait DBMigration {
 }
 
 trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
-  override val context = new SqliteJdbcContext(SnakeCase, "db")
+
+  lazy val jdbcUrl: String = s"jdbc:sqlite:${PATH_HOME.resolve("cat.db").normalize().toFile.toString}"
+  lazy val dbConfig: Config = Configs.DB_CONFIG.withValue("jdbcUrl", ConfigValueFactory.fromAnyRef(jdbcUrl))
+
+  override lazy val flyway: Flyway = Flyway.configure.dataSource(jdbcUrl, "", "").load
+  override lazy val context = new SqliteJdbcContext(SnakeCase, dbConfig)
 
   import context._
 
