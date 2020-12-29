@@ -6,12 +6,17 @@ import java.time.Clock
 import java.util.{ Base64, TimeZone }
 
 import com.flatmappable.util.Configs
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.Logger
 import org.apache.commons.codec.binary.Hex
 import org.json4s.jackson.Serialization
 import org.json4s.{ Formats, NoTypeHints }
+import org.slf4j.LoggerFactory
 
-package object flatmappable extends DataStore with LazyLogging {
+package object flatmappable extends DataStore {
+
+  @transient
+  protected lazy val logger: Logger =
+    Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("Catalina")))
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
