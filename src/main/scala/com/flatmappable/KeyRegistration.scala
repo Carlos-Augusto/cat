@@ -98,16 +98,20 @@ object KeyRegistration extends RequestClient with LazyLogging {
 
     val response = create(data)
 
-    KeyRowQueriesImp.insert(KeyRow(
-      UUID.randomUUID(),
-      Configs.ENV,
-      uuid,
-      algo = algo.toString(),
-      privKey = key,
-      rawPrivKey = privKey,
-      rawPubKey = pubKey,
-      new Date()
-    ))
+    store(response.status) {
+      KeyRowQueriesImp.insert(
+        KeyRow(
+          UUID.randomUUID(),
+          Configs.ENV,
+          uuid,
+          algo = algo.toString(),
+          privKey = key,
+          rawPrivKey = privKey,
+          rawPubKey = pubKey,
+          createdAt = new Date()
+        )
+      )
+    }
 
     (key, pubKey, privKey, (info, data, response))
   }

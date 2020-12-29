@@ -26,7 +26,18 @@ object DataSending extends RequestClient {
   def send(uuid: UUID, password: String, hash: String, upp: String, extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
-    TimestampRowQueriesImp.insert(TimestampRow(UUID.randomUUID(), Configs.ENV, uuid, hash, upp, new Date()))
+    store(response.status) {
+      TimestampRowQueriesImp.insert(
+        TimestampRow(
+          id = UUID.randomUUID(),
+          env = Configs.ENV,
+          uuid = uuid,
+          hash = hash,
+          upp = upp,
+          createdAt = new Date()
+        )
+      )
+    }
 
     response
   }

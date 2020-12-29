@@ -16,7 +16,7 @@ package object flatmappable extends DataStore {
 
   @transient
   protected lazy val logger: Logger =
-    Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("Catalina")))
+    Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("flatmappable")))
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
@@ -30,6 +30,14 @@ package object flatmappable extends DataStore {
     val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     _df.setTimeZone(TimeZone.getTimeZone("UTC"))
     _df
+  }
+
+  def store[T](responseStatus: Int)(f: => T): Option[T] = {
+    if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
+      Option(f)
+    } else {
+      None
+    }
   }
 
   def init(http: Boolean = false): Unit = {
