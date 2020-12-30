@@ -64,10 +64,15 @@ trait TimestampRowDAO extends CustomEncodingsBase {
       (t: TimestampRow) => query[TimestampRow].insert(t)
     }
 
+    val byIdQ = quote {
+      (id: UUID) => query[TimestampRow].filter(_.id == id)
+    }
+
   }
 
   trait TimestampRowQueries {
     def insert(timestampRow: TimestampRow): Long
+    def byId(id: UUID): List[TimestampRow]
   }
 
 }
@@ -106,6 +111,7 @@ trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
 
   object Timestamps extends TimestampRowQueries {
     override def insert(timestampRow: TimestampRow): Long = context.run(TimestampRow.insertQ(lift(timestampRow)))
+    override def byId(id: UUID): List[TimestampRow] = context.run(TimestampRow.byIdQ(lift(id)))
   }
 
   sys.addShutdownHook(context.close())
