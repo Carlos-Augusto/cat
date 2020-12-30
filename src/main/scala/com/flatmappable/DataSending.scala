@@ -27,7 +27,7 @@ object DataSending extends RequestClient {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
     store(response.status) {
-      TimestampRowQueriesImp.insert(
+      Timestamps.insert(
         TimestampRow(
           id = UUID.randomUUID(),
           env = Configs.ENV,

@@ -82,11 +82,11 @@ trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
 
   import context._
 
-  object KeyRowQueriesImp extends KeyRowQueries {
+  object Keys extends KeyRowQueries {
     override def insert(keyRow: KeyRow): Long = context.run(KeyRow.insertQ(lift(keyRow)))
   }
 
-  object TimestampRowQueriesImp extends TimestampRowQueries {
+  object Timestamps extends TimestampRowQueries {
     override def insert(timestampRow: TimestampRow): Long = context.run(TimestampRow.insertQ(lift(timestampRow)))
   }
 
