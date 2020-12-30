@@ -14,7 +14,9 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="com.flatmappable" level="INFO"/>
+
+    <root level="ERROR">
         <appender-ref ref="STDOUT"/>
     </root>
 

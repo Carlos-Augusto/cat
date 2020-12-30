@@ -1,8 +1,8 @@
 package com.flatmappable
 
-import com.flatmappable.util.KeyPairHelper
-
 import java.util.UUID
+
+import com.flatmappable.util.KeyPairHelper
 import org.apache.http.util.EntityUtils
 import org.json4s.jackson.JsonMethods._
 import org.scalatest.funsuite.AnyFunSuite
