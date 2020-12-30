@@ -47,7 +47,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
   private lazy val _configs: String =
     s"""
      |- VERSION: $version
-     |- ENV: ${Configs.ENV}
+     |- ENV: ${Configs.ENV.name}
      |- PORT: ${Configs.CAT_HTTP_PORT}
      |- HOST: $host
      |- DATA_SENDING_URL:${Configs.DATA_SENDING_URL}
@@ -71,9 +71,9 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
               .toEither
           }
           .getOrElse(JsonHelper.compact(body))
-      case "text/plain" => Try(new String(body, charset.getOrElse(StandardCharsets.UTF_8)), body).toEither
+      case "text/plain" => Try((new String(body, charset.getOrElse(StandardCharsets.UTF_8)), body)).toEither
     }
-      .getOrElse(Right("", body))
+      .getOrElse(Right(("", body)))
       .getOrElse(throw BadRequestException("Body is malformed"))
   }
 

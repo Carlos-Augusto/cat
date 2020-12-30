@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 INSTALL_FOLDER=$1
-VERSION=0.0.4
+VERSION=0.0.7
 
 if [ -z "$1" ]
   then

@@ -6,7 +6,7 @@ import java.util.UUID
 import com.flatmappable.util.ResponseData
 import io.undertow.Undertow
 import org.scalatest.funsuite.AnyFunSuite
-import requests.{ RequestFailedException, headers }
+import requests.RequestFailedException
 
 import scala.util.Try
 

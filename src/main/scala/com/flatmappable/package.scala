@@ -1,51 +1,62 @@
 package com
 
-import java.nio.file.{ Files, Path, Paths, StandardOpenOption }
+import java.nio.file.{ Files, Path, Paths }
 import java.text.SimpleDateFormat
 import java.time.Clock
 import java.util.{ Base64, TimeZone }
 
 import com.flatmappable.util.Configs
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.Logger
 import org.apache.commons.codec.binary.Hex
+import org.joda.time.{ DateTime, DateTimeZone }
 import org.json4s.jackson.Serialization
 import org.json4s.{ Formats, NoTypeHints }
+import org.slf4j.LoggerFactory
 
-package object flatmappable extends LazyLogging {
+package object flatmappable extends DataStore {
 
-  final val version = "0.0.6"
+  @transient
+  protected lazy val logger: Logger =
+    Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("flatmappable")))
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
-  val clock: Clock = Clock.systemUTC
+  final val version = "0.0.7"
 
-  val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
-  val PATH_UPPs: Path = PATH_HOME.resolve(".sent_upps").normalize()
-  val PATH_KEYS: Path = PATH_HOME.resolve(".keys").normalize()
+  final val clock: Clock = Clock.systemUTC
 
-  val defaultDataFormat: SimpleDateFormat = {
+  final val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
+
+  final val defaultDataFormat: SimpleDateFormat = {
     val _df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     _df.setTimeZone(TimeZone.getTimeZone("UTC"))
     _df
+  }
+
+  def store[T](responseStatus: Int)(f: => T): Option[T] = {
+    if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
+      Option(f)
+    } else {
+      None
+    }
   }
 
   def init(http: Boolean = false): Unit = {
     if (http) {
       logger.info("Port={}", Configs.CAT_HTTP_PORT)
     }
-    logger.info("Environment={}", Configs.ENV)
+    logger.info("Environment={}", Configs.ENV.name)
     if (!PATH_HOME.toFile.exists()) {
       logger.info("Creating home=" + PATH_HOME.toFile.toString)
       Files.createDirectory(PATH_HOME)
     } else {
       logger.info("home exists=" + PATH_HOME.toFile.getCanonicalPath)
     }
-  }
 
-  def store(dataToStore: Array[Byte], path: Path, responseStatus: Int): Unit = {
-    if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
-      Files.write(path, dataToStore, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+    if (pending()) {
+      val _ = migrate()
     }
+
   }
 
   def toBase64AsString(data: Array[Byte]): String = Base64.getEncoder.encodeToString(data)
@@ -69,6 +80,7 @@ package object flatmappable extends LazyLogging {
     } catch { case e: Exception => Left(e) }
   }
 
+  def dateTimeNowUTC: DateTime = DateTime.now(DateTimeZone.UTC)
   def now: Long = clock.millis()
 
   def OK: Int = 200

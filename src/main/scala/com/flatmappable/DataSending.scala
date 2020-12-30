@@ -1,11 +1,11 @@
 package com.flatmappable
 
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 import com.flatmappable.util.{ Configs, RequestClient, ResponseData }
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ByteArrayEntity
+import org.joda.time.DateTime
 
 object DataSending extends RequestClient {
 
@@ -27,11 +27,18 @@ object DataSending extends RequestClient {
   def send(uuid: UUID, password: String, hash: String, upp: String, extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
     val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
 
-    store(
-      s"${Configs.ENV},$uuid,$hash,$upp\n".getBytes(StandardCharsets.UTF_8),
-      PATH_UPPs,
-      response.status
-    )
+    store(response.status) {
+      Timestamps.insert(
+        TimestampRow(
+          id = UUID.randomUUID(),
+          env = Configs.ENV,
+          uuid = uuid,
+          hash = hash,
+          upp = upp,
+          createdAt = new DateTime()
+        )
+      )
+    }
 
     response
   }
