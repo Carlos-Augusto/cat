@@ -1,5 +1,6 @@
 package com.flatmappable
 
+import java.nio.file.Paths
 import java.util.{ Date, UUID }
 
 import com.flatmappable.util.Configs
@@ -74,8 +75,15 @@ trait DBMigration {
 
 trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
 
-  lazy val jdbcUrl: String = s"jdbc:sqlite:${PATH_HOME.resolve("cat.db").normalize().toFile.toString}"
-  lazy val dbConfig: Config = Configs.DB_CONFIG.withValue("jdbcUrl", ConfigValueFactory.fromAnyRef(jdbcUrl))
+  lazy val asTest: Boolean = Configs.DB_CONFIG.getBoolean("asTest")
+  lazy val jdbcUrl: String = {
+    val home = if (asTest) Paths.get(System.getProperty("java.io.tmpdir")) else PATH_HOME
+    val name = if (asTest) s"cat.$now.db" else "cat.db"
+    s"jdbc:sqlite:${home.resolve(name).normalize().toFile.toString}"
+  }
+  lazy val dbConfig: Config = Configs.DB_CONFIG
+    .withValue("jdbcUrl", ConfigValueFactory.fromAnyRef(jdbcUrl))
+    .withoutPath("asTest") // We remove this path as the db pool complains otherwise
 
   override lazy val flyway: Flyway = Flyway.configure.dataSource(jdbcUrl, "", "").load
   override lazy val context = new SqliteJdbcContext(SnakeCase, dbConfig)
