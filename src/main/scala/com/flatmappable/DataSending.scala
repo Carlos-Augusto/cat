@@ -1,10 +1,11 @@
 package com.flatmappable
 
-import java.util.{ Date, UUID }
+import java.util.UUID
 
 import com.flatmappable.util.{ Configs, RequestClient, ResponseData }
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.ByteArrayEntity
+import org.joda.time.DateTime
 
 object DataSending extends RequestClient {
 
@@ -34,7 +35,7 @@ object DataSending extends RequestClient {
           uuid = uuid,
           hash = hash,
           upp = upp,
-          createdAt = new Date()
+          createdAt = new DateTime()
         )
       )
     }

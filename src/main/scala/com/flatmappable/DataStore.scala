@@ -1,13 +1,14 @@
 package com.flatmappable
 
 import java.nio.file.Paths
-import java.util.{ Date, UUID }
+import java.util.UUID
 
 import com.flatmappable.util.Configs
 import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.getquill.context.sql.SqlContext
 import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import org.flywaydb.core.Flyway
+import org.joda.time.{ DateTime, DateTimeZone }
 
 trait CustomEncodingsBase {
 
@@ -17,6 +18,9 @@ trait CustomEncodingsBase {
   implicit def encodeSymbol = MappedEncoding[Symbol, String](Option(_).map(_.name).getOrElse(""))
   implicit def decodeSymbol = MappedEncoding[String, Symbol](x => Symbol(x))
 
+  implicit def encodeDate = MappedEncoding[DateTime, String](Option(_).map(_.withZone(DateTimeZone.UTC).toString).getOrElse(""))
+  implicit def decodeDate = MappedEncoding[String, DateTime](x => DateTime.parse(x).withZone(DateTimeZone.UTC))
+
 }
 
 trait KeyRowDAO extends CustomEncodingsBase {
@@ -25,7 +29,7 @@ trait KeyRowDAO extends CustomEncodingsBase {
 
   import context._
 
-  case class KeyRow(id: UUID, env: Symbol, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String, createdAt: Date)
+  case class KeyRow(id: UUID, env: Symbol, uuid: UUID, algo: String, privKey: String, rawPrivKey: String, rawPubKey: String, createdAt: DateTime)
 
   object KeyRow {
 
@@ -33,10 +37,15 @@ trait KeyRowDAO extends CustomEncodingsBase {
       (k: KeyRow) => query[KeyRow].insert(k)
     }
 
+    val byIdQ = quote {
+      (id: UUID) => query[KeyRow].filter(_.id == id)
+    }
+
   }
 
   trait KeyRowQueries {
     def insert(keyRow: KeyRow): Long
+    def byId(id: UUID): List[KeyRow]
   }
 
 }
@@ -47,7 +56,7 @@ trait TimestampRowDAO extends CustomEncodingsBase {
 
   import context._
 
-  case class TimestampRow(id: UUID, env: Symbol, uuid: UUID, hash: String, upp: String, createdAt: Date)
+  case class TimestampRow(id: UUID, env: Symbol, uuid: UUID, hash: String, upp: String, createdAt: DateTime)
 
   object TimestampRow {
 
@@ -92,6 +101,7 @@ trait DataStore extends KeyRowDAO with TimestampRowDAO with DBMigration {
 
   object Keys extends KeyRowQueries {
     override def insert(keyRow: KeyRow): Long = context.run(KeyRow.insertQ(lift(keyRow)))
+    override def byId(id: UUID): List[KeyRow] = context.run(KeyRow.byIdQ(lift(id)))
   }
 
   object Timestamps extends TimestampRowQueries {

@@ -1,7 +1,7 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.util.{ Base64, Date, UUID }
+import java.util.{ Base64, UUID }
 
 import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
 import com.flatmappable.util._
@@ -9,6 +9,7 @@ import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
+import org.joda.time.DateTime
 import org.json4s.jackson.JsonMethods._
 
 object KeyRegistration extends RequestClient with LazyLogging {
@@ -108,7 +109,7 @@ object KeyRegistration extends RequestClient with LazyLogging {
           privKey = key,
           rawPrivKey = privKey,
           rawPubKey = pubKey,
-          createdAt = new Date()
+          createdAt = new DateTime()
         )
       )
     }

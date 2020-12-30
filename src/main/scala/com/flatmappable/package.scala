@@ -8,6 +8,7 @@ import java.util.{ Base64, TimeZone }
 import com.flatmappable.util.Configs
 import com.typesafe.scalalogging.Logger
 import org.apache.commons.codec.binary.Hex
+import org.joda.time.{ DateTime, DateTimeZone }
 import org.json4s.jackson.Serialization
 import org.json4s.{ Formats, NoTypeHints }
 import org.slf4j.LoggerFactory
@@ -79,6 +80,7 @@ package object flatmappable extends DataStore {
     } catch { case e: Exception => Left(e) }
   }
 
+  def dateTimeNowUTC: DateTime = DateTime.now(DateTimeZone.UTC)
   def now: Long = clock.millis()
 
   def OK: Int = 200
