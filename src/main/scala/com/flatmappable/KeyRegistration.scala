@@ -5,14 +5,13 @@ import java.util.{ Base64, UUID }
 
 import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
 import com.flatmappable.util._
-import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.crypto.PrivKey
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.joda.time.DateTime
 import org.json4s.jackson.JsonMethods._
 
-object KeyRegistration extends RequestClient with LazyLogging {
+object KeyRegistration extends RequestClient with Logging {
 
   def pubKeyInfoData(
       algorithm: Symbol,

@@ -4,14 +4,13 @@ import java.nio.charset.{ Charset, StandardCharsets }
 import java.util.UUID
 
 import cask.model.Response
-import com.flatmappable.util.{ Configs, JsonHelper, ResponseData }
-import com.typesafe.scalalogging.LazyLogging
+import com.flatmappable.util.{ Configs, JsonHelper, Logging, ResponseData }
 import com.ubirch.protocol.Protocol
 import ujson.Obj
 
 import scala.util.Try
 
-abstract class CatalinaHttpBase extends cask.MainRoutes with LazyLogging {
+abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
 
   init(http = true)
 

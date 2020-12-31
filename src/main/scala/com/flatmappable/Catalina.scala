@@ -5,8 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.UUID
 
-import com.flatmappable.util.Timer
-import com.typesafe.scalalogging.Logger
+import com.flatmappable.util.{ Logging, Timer }
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
 import org.apache.commons.codec.binary.Hex
@@ -14,15 +13,10 @@ import org.backuity.clist._
 import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
 import org.json4s.jackson.JsonMethods._
-import org.slf4j.LoggerFactory
 
 import scala.util.Try
 
-object Catalina {
-
-  @transient
-  protected lazy val logger: Logger =
-    Logger(LoggerFactory.getLogger(getClass.getName.split("\\$").headOption.getOrElse("Catalina")))
+object Catalina extends Logging {
 
   implicit val uuidRead: Read[UUID] = reads("a UUID") { UUID.fromString }
 
