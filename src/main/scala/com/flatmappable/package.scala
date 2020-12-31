@@ -27,7 +27,7 @@ package object flatmappable extends DataStore with Logging {
     _df
   }
 
-  def store[T](responseStatus: Int)(f: => T): Option[T] = {
+  def doWhenOK[T](responseStatus: Int)(f: => T): Option[T] = {
     if (responseStatus >= OK && responseStatus < MULTIPLE_CHOICE) {
       Option(f)
     } else {

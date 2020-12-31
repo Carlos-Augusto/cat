@@ -98,7 +98,7 @@ object KeyRegistration extends RequestClient {
 
     val response = create(data)
 
-    store(response.status) {
+    doWhenOK(response.status) {
       Keys.insert(
         KeyRow(
           UUID.randomUUID(),
