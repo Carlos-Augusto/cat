@@ -11,7 +11,7 @@ import org.apache.http.entity.StringEntity
 import org.joda.time.DateTime
 import org.json4s.jackson.JsonMethods._
 
-object KeyRegistration extends RequestClient with Logging {
+object KeyRegistration extends RequestClient {
 
   def pubKeyInfoData(
       algorithm: Symbol,
@@ -114,13 +114,6 @@ object KeyRegistration extends RequestClient with Logging {
     }
 
     (key, pubKey, privKey, (info, data, response))
-  }
-
-  def logOutput(info: String, data: String, resp: ResponseData[String]): Unit = {
-    logger.info("Info: " + info)
-    logger.info("Data: " + data)
-    logger.info("Response: " + resp.body)
-    printStatus(resp.status)
   }
 
 }

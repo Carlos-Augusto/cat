@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-VERSION=0.0.6
+VERSION=0.0.7
 URL=https://github.com/Carlos-Augusto/cat/releases/download/${VERSION}
 INSTALL_FOLDER=/opt/catalina
 SYMLINK=/usr/bin/catalina
