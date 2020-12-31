@@ -1,17 +1,15 @@
 package com.flatmappable
 
 import java.nio.charset.StandardCharsets
-import java.util.{ Base64, UUID }
+import java.util.UUID
 
 import com.flatmappable.util.KeyPairHelper.EnrichedPrivKey
 import com.flatmappable.util._
 import com.ubirch.crypto.PrivKey
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.StringEntity
 import org.joda.time.DateTime
 import org.json4s.jackson.JsonMethods._
 
-object KeyRegistration extends RequestClient {
+object KeyRegistration {
 
   def pubKeyInfoData(
       algorithm: Symbol,
@@ -56,22 +54,6 @@ object KeyRegistration extends RequestClient {
     """.stripMargin
   }
 
-  def registerKeyRequest(body: String): HttpPost = {
-    val regRequest = new HttpPost(Configs.KEY_REGISTRATION_URL)
-    regRequest.setHeader(CONTENT_TYPE, "application/json")
-    regRequest.setEntity(new StringEntity(body))
-    regRequest
-  }
-
-  def create(key: String): ResponseData[String] = {
-    callAsString(registerKeyRequest(key))
-  }
-
-  def getKey(privateKey: String): PrivKey = {
-    val clientKeyBytes = Base64.getDecoder.decode(privateKey)
-    KeyPairHelper.privateKeyEd25519(clientKeyBytes)
-  }
-
   def createKey(
       uuid: UUID,
       algo: Symbol = KeyPairHelper.ECC_ED25519,
@@ -96,7 +78,7 @@ object KeyRegistration extends RequestClient {
     val (_, info, data) = createKey(uuid, algo = algo, clientKey = clientKey)
     val (key, pubKey, privKey) = clientKey.asString
 
-    val response = create(data)
+    val response = KeyCreation.create(data)
 
     doWhenOK(response.status) {
       Keys.insert(

@@ -1,6 +1,8 @@
 package com.flatmappable
 package util
 
+import java.util.Base64
+
 import com.ubirch.crypto.utils.Curve
 import com.ubirch.crypto.{ GeneratorKeyFactory, PrivKey }
 
@@ -15,6 +17,7 @@ object KeyPairHelper {
   }
 
   def privateKeyEd25519(key: Array[Byte]): PrivKey = GeneratorKeyFactory.getPrivKey(key, Curve.Ed25519)
+  def privateKeyEd25519(key: String): PrivKey = privateKeyEd25519(Base64.getDecoder.decode(key))
   def privateKeyEd25519: PrivKey = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
 
   def privateKeyPRIME256V1(key: Array[Byte]): PrivKey = GeneratorKeyFactory.getPrivKey(key, Curve.PRIME256V1)

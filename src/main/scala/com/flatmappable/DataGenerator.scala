@@ -5,7 +5,7 @@ import java.security.MessageDigest
 import java.util.UUID
 
 import com.flatmappable.models.SimpleProtocolImpl
-import com.flatmappable.util.Logging
+import com.flatmappable.util.{ KeyPairHelper, Logging }
 import com.ubirch.crypto.PrivKey
 import com.ubirch.protocol.{ Protocol, ProtocolMessage }
 
@@ -47,17 +47,17 @@ class DataGenerator(uuid: UUID, clientKey: PrivKey) extends Logging {
 object DataGenerator {
 
   def generate(uuid: UUID, privateKey: String, format: Protocol.Format, maxNumberOfMessages: Int = 1): List[SimpleDataGeneration] = {
-    val clientKey = KeyRegistration.getKey(privateKey)
+    val clientKey = KeyPairHelper.privateKeyEd25519(privateKey)
     new DataGenerator(uuid, clientKey).toList(maxNumberOfMessages, format)
   }
 
   def single(uuid: UUID, data: String, privateKey: String, format: Protocol.Format, withNonce: Boolean): (ProtocolMessage, String, String) = {
-    val clientKey = KeyRegistration.getKey(privateKey)
+    val clientKey = KeyPairHelper.privateKeyEd25519(privateKey)
     new DataGenerator(uuid, clientKey).single(data, format, withNonce)
   }
 
   def single(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format): (ProtocolMessage, Array[Byte], Array[Byte]) = {
-    val clientKey = KeyRegistration.getKey(privateKey)
+    val clientKey = KeyPairHelper.privateKeyEd25519(privateKey)
     new DataGenerator(uuid, clientKey).single(data, format)
   }
 
