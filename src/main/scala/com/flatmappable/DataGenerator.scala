@@ -13,7 +13,7 @@ case class SimpleDataGeneration(UUID: UUID, upp: String, hash: String)
 
 class DataGenerator(uuid: UUID, clientKey: PrivKey) extends Logging {
 
-  val protocol = new SimpleProtocolImpl(uuid, clientKey)
+  val protocol: Protocol = new SimpleProtocolImpl(uuid, clientKey)
 
   def generate(maxMessages: Int, format: Protocol.Format)(dump: (UUID, String, String) => Unit): Unit = {
     Iterator
@@ -61,24 +61,24 @@ object DataGenerator {
     new DataGenerator(uuid, clientKey).single(data, format)
   }
 
-  def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: Array[Byte]): (ProtocolMessage, Array[Byte], Array[Byte]) = {
+  def buildMessage(clientUUID: UUID, protocol: Protocol, format: Protocol.Format, data: Array[Byte]): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     val hash = MessageDigest.getInstance("SHA-512").digest(data)
     val pm = new ProtocolMessage(ProtocolMessage.SIGNED, clientUUID, 0x00, hash)
     val upp = protocol.encodeSign(pm, format)
     (pm, upp, hash)
   }
 
-  def buildMessage(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, Array[Byte], Array[Byte]) = {
+  def buildMessage(clientUUID: UUID, protocol: Protocol, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, Array[Byte], Array[Byte]) = {
     val message = if (withNonce) data + "," + defaultDataFormat.format(System.currentTimeMillis) + "," + clientUUID.toString else data
     buildMessage(clientUUID, protocol, format, message.getBytes(StandardCharsets.UTF_8))
   }
 
-  def buildMessageFromInt(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, temp: Int, withNonce: Boolean): (ProtocolMessage, String, String) = {
+  def buildMessageFromInt(clientUUID: UUID, protocol: Protocol, format: Protocol.Format, temp: Int, withNonce: Boolean): (ProtocolMessage, String, String) = {
     val (pm, upp, hash) = buildMessage(clientUUID, protocol, format, temp.toString, withNonce)
     (pm, toHex(upp), toBase64AsString(hash))
   }
 
-  def buildMessageFromString(clientUUID: UUID, protocol: SimpleProtocolImpl, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, String, String) = {
+  def buildMessageFromString(clientUUID: UUID, protocol: Protocol, format: Protocol.Format, data: String, withNonce: Boolean): (ProtocolMessage, String, String) = {
     val (pm, upp, hash) = buildMessage(clientUUID, protocol, format, data, withNonce)
     (pm, toHex(upp), toBase64AsString(hash))
   }

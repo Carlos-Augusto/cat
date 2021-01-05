@@ -70,7 +70,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val uuid = UUID.randomUUID()
     val data = UUID.randomUUID()
     val dataAsBytes = UUIDUtil.uuidToBytes(data)
-    val protocol = new SimpleProtocolImpl(uuid, pk)
+    val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
     val (pm, upp, hash) = DataGenerator.buildMessage(uuid, protocol, Protocol.Format.MSGPACK, dataAsBytes)
 
     assert(pm != null)
@@ -84,7 +84,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
     val uuid = UUID.randomUUID()
     val data = UUID.randomUUID()
-    val protocol = new SimpleProtocolImpl(uuid, pk)
+    val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
     val (pm, upp, hash) = DataGenerator.buildMessage(uuid, protocol, Protocol.Format.MSGPACK, data.toString, withNonce = false)
 
     assert(pm != null)
@@ -98,7 +98,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
     val uuid = UUID.randomUUID()
     val data = 1
-    val protocol = new SimpleProtocolImpl(uuid, pk)
+    val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
     val (pm, upp, hash) = DataGenerator.buildMessageFromInt(uuid, protocol, Protocol.Format.MSGPACK, data, withNonce = false)
 
     assert(pm != null)
@@ -112,7 +112,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
     val uuid = UUID.randomUUID()
     val data = "1"
-    val protocol = new SimpleProtocolImpl(uuid, pk)
+    val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
     val (pm, upp, hash) = DataGenerator.buildMessageFromString(uuid, protocol, Protocol.Format.MSGPACK, data, withNonce = false)
 
     assert(pm != null)
