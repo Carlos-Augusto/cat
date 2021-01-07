@@ -1,5 +1,7 @@
 # Catalina
 
+![Logo](logo.jpg){:height="100px" width="100px"}
+
 ![CI with Maven](https://github.com/Carlos-Augusto/cat/workflows/CI%20with%20Maven/badge.svg)
 
 ## General Description
