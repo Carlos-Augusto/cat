@@ -14,7 +14,7 @@ import org.backuity.clist.util.Read
 import org.backuity.clist.util.Read.reads
 import org.json4s.jackson.JsonMethods._
 
-import scala.util.Try
+import scala.util.{ Failure, Random, Success, Try }
 
 object Catalina extends Logging {
 
@@ -60,12 +60,12 @@ object Catalina extends Logging {
       logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
 
       DataGenerator
-        .generate(GenerateRandomTimestamp.uuid, GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK)
+        .single(GenerateRandomTimestamp.uuid, Random.nextBytes(64), GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK, withNonce = true)
         .foreach { x =>
           logger.info("upp={}", x.upp)
           logger.info("hash={}", x.hash)
           if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-            val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, hash = x.hash, upp = x.upp)
+            val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, hash = x.hashAsBase64, upp = x.uppAsHex)
             printStatus(resp.status)
           }
         }
@@ -90,26 +90,23 @@ object Catalina extends Logging {
 
     def run() = {
       var source = ""
-      val data = {
+      val data: Array[Byte] = {
         if (CreateTimestamp.readLine) {
           logger.info("Please enter your data (end with 'return')'")
           source = "line"
-          scala.io.StdIn.readLine()
+          scala.io.StdIn.readLine().getBytes(StandardCharsets.UTF_8)
         } else if (CreateTimestamp.file.getName.nonEmpty) {
           source = "file"
           logger.info(s"$source={}", CreateTimestamp.file.getName)
-          val bytes = if (CreateTimestamp.file.exists() && CreateTimestamp.file.isFile) {
+          if (CreateTimestamp.file.exists() && CreateTimestamp.file.isFile) {
             Files.readAllBytes(CreateTimestamp.file.toPath)
           } else {
             logger.info(s"$source={} doesn't exist", CreateTimestamp.file.getName)
             Array.empty[Byte]
           }
-
-          Hex.encodeHexString(bytes)
-
         } else {
           source = "text"
-          CreateTimestamp.text
+          CreateTimestamp.text.getBytes(StandardCharsets.UTF_8)
         }
       }
 
@@ -118,25 +115,29 @@ object Catalina extends Logging {
       if (data.nonEmpty) {
         logger.info(s"$source={}", data)
 
-        val (pmo, upp, hash) = DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce)
+        DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce) match {
+          case Failure(exception) =>
+            logger.info("Error creating protocol message " + exception.getMessage)
+          case Success(sd) =>
 
-        logger.info("pm={}", pmo.toString)
-        logger.info("upp={}", toBase64AsString(Hex.decodeHex(upp)))
-        logger.info("upp={}", upp)
-        logger.info("signed={}", toBase64AsString(pmo.getSigned))
-        logger.info("hash={}", hash)
+            logger.info("pm={}", sd.protocolMessage.toString)
+            logger.info("upp={}", sd.uppAsHex)
+            logger.info("signed={}", toBase64AsString(sd.protocolMessage.getSigned))
+            logger.info("hash={}", sd.hashAsBase64)
 
-        val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = hash, upp = upp), "UPP Sending")
-        val resp = timedResp.getResult
+            val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = sd.hashAsBase64, upp = sd.uppAsHex), "UPP Sending")
+            val resp = timedResp.getResult
 
-        val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
-          .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
+            val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
+              .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
-        printStatus(resp.status)
-        logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
-        logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
-        logger.info("Response Body: " + pm)
-        logger.info("Response Time: (ms)" + timedResp.elapsed)
+            printStatus(resp.status)
+            logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
+            logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
+            logger.info("Response Body: " + pm)
+            logger.info("Response Time: (ms)" + timedResp.elapsed)
+
+        }
 
       } else {
         logger.warn(s"$source data is not valid. Could be empty or file doesn't exist.")
