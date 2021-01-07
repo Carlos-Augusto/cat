@@ -113,7 +113,10 @@ object Catalina extends Logging {
       logger.info(s"Creating Timestamp($source) for uuid={}", CreateTimestamp.uuid)
 
       if (data.nonEmpty) {
-        logger.info(s"$source={}", data)
+        source match {
+          case "file" => //print nothing
+          case _ => logger.info(s"$source={}", new String(data, StandardCharsets.UTF_8))
+        }
 
         DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce) match {
           case Failure(exception) =>
