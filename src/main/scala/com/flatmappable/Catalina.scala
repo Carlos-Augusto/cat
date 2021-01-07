@@ -62,8 +62,8 @@ object Catalina extends Logging {
       DataGenerator
         .single(GenerateRandomTimestamp.uuid, Random.nextBytes(64), GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK, withNonce = true)
         .foreach { x =>
-          logger.info("upp={}", x.upp)
-          logger.info("hash={}", x.hash)
+          logger.info("upp={}", x.uppAsHex)
+          logger.info("hash={}", x.hashAsBase64)
           if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
             val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, hash = x.hashAsBase64, upp = x.uppAsHex)
             printStatus(resp.status)
@@ -134,11 +134,11 @@ object Catalina extends Logging {
             val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
               .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
-            printStatus(resp.status)
             logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
             logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
             logger.info("Response Body: " + pm)
             logger.info("Response Time: (ms)" + timedResp.elapsed)
+            printStatus(resp.status)
 
         }
 
