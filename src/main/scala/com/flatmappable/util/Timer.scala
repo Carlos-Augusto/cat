@@ -1,10 +1,8 @@
 package com.flatmappable.util
 
-import com.typesafe.scalalogging.LazyLogging
-
 import scala.util.Try
 
-object Timer extends LazyLogging {
+object Timer extends Logging {
 
   case class Timed[R](result: Try[R], timeTaken: Interval, description: String) {
     lazy val elapsed: Long = timeTaken.time

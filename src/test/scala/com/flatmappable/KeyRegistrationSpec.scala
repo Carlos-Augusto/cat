@@ -23,7 +23,7 @@ class KeyRegistrationSpec extends AnyFunSuite {
   test("KeyRegistration.registerKeyRequest should be properly formed") {
 
     val data = "123"
-    val req = KeyRegistration.registerKeyRequest(data)
+    val req = KeyCreation.registerKeyRequest(data)
     val headers = req.getAllHeaders.toList
 
     assert(req.getURI.toString == "https://key.dev.ubirch.com/api/keyService/v1/pubkey")
