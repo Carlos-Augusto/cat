@@ -6,6 +6,12 @@
 
 Catalina allows you to interact with the core features of the Ubirch Trust Platform (Cloud). You are able to send micro-certificates from different sources, files, user input, fixed strings. You can verify the micro-certificates after sending, which guaranties that your timestamp is now immutable and trust-enabled.
 
+1. [General Description](#general-description)
+2. [Environment Variables](#env-variables)
+3. [Install Latest Version](#install-latest-version)
+4. [Install From Sources](#install-from-sources)
+5. [Http Service](#http-interface)
+
 ## General Description
 
 ![Commands](images/commandsWithDesc.png)
