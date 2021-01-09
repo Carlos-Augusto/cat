@@ -543,6 +543,45 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
+  test("CatalinaHttp.send should detect json with more special characters") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = """{"data":"let's do it, ich möchte, nämlich"}""".stripMargin
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data,
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "application/json"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.statusCode == 200)
+      assert(processed == data)
+
+    }
+
+  }
+
   test("CatalinaHttp.send should detect text with maybe special character") {
 
     var processed: String = null

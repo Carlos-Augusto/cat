@@ -136,4 +136,21 @@ class DataGeneratorSpec extends AnyFunSuite {
 
   }
 
+  test("DataGenerator.buildMessageFromString should generate data from json with special characters") {
+
+    val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
+    val uuid = UUID.randomUUID()
+    val data = """{"data":"let's do it, ich möchte, nämlich"}""".stripMargin.getBytes(StandardCharsets.UTF_8)
+    val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
+    DataGenerator.buildMessage(uuid, protocol, Protocol.Format.MSGPACK, data, withNonce = false) match {
+      case Failure(exception) => fail(exception)
+      case Success(value) =>
+        assert(value.protocolMessage != null)
+        assert(value.upp.nonEmpty)
+        assert(value.hash.nonEmpty)
+        assert(value.hashAsBase64 == """Mh2zkLvnPm9SnR/7PhSCQfQnko6erqs6CsLRqVxVKBT0HsGaaIxGHFOaI7TV5VARNAyulzlO+KI6+hRUZIdvhw==""")
+    }
+
+  }
+
 }
