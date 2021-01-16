@@ -103,26 +103,33 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
         logger.info("body={}", asString)
       }
 
-      DataGenerator.buildMessage(identity, asBytes, privateKey, Protocol.Format.MSGPACK, withNonce = false) match {
-        case Failure(exception) => throw exception
-        case Success(data) =>
+      DataGenerator.buildMessage(
+        identity,
+        asBytes,
+        privateKey,
+        Protocol.Format.MSGPACK,
+        DataGenerator.SHA512,
+        withNonce = false
+      ) match {
+          case Failure(exception) => throw exception
+          case Success(data) =>
 
-          val res = sendData(identity, pass, data.hash, data.upp, headersToRedirect)
+            val res = sendData(identity, pass, data.hash, data.upp, headersToRedirect)
 
-          if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
-            cask.Response(ResponseMessage(res.status, "Success", data.hashAsBase64).toJson, res.status)
-          } else if (res.status == KNOWN_UPP) {
-            logger.error(s"UPP already known=${data.hashAsBase64} Status=${res.status}")
-            cask.Response(ResponseMessage(res.status, "KnownUPPError", data.hashAsBase64).toJson, res.status)
-          } else if (res.status == UNAUTHORIZED) {
-            logger.error(s"UPP was rejected=${data.hashAsBase64} Status=${res.status}")
-            cask.Response(ResponseMessage(res.status, "Unauthorized", data.hashAsBase64).toJson, res.status)
-          } else {
-            logger.error(s"Error Sending UPP=${data.hashAsBase64} Status=${res.status}")
-            cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${data.hashAsBase64}").toJson, res.status)
-          }
+            if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
+              cask.Response(ResponseMessage(res.status, "Success", data.hashAsBase64).toJson, res.status)
+            } else if (res.status == KNOWN_UPP) {
+              logger.error(s"UPP already known=${data.hashAsBase64} Status=${res.status}")
+              cask.Response(ResponseMessage(res.status, "KnownUPPError", data.hashAsBase64).toJson, res.status)
+            } else if (res.status == UNAUTHORIZED) {
+              logger.error(s"UPP was rejected=${data.hashAsBase64} Status=${res.status}")
+              cask.Response(ResponseMessage(res.status, "Unauthorized", data.hashAsBase64).toJson, res.status)
+            } else {
+              logger.error(s"Error Sending UPP=${data.hashAsBase64} Status=${res.status}")
+              cask.Response(ResponseMessage(res.status, "SendingUPPError", s"Error Sending UPP with Hash=${data.hashAsBase64}").toJson, res.status)
+            }
 
-      }
+        }
 
     } catch {
       case BadRequestException(message) =>

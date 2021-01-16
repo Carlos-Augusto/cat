@@ -17,7 +17,8 @@ class DataGeneratorSpec extends AnyFunSuite {
     val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
     val pkAsString = toBase64AsString(pk.getRawPrivateKey)
     val uuid = UUID.randomUUID()
-    val sdg = DataGenerator.buildMessage(uuid, 3.toString.getBytes(StandardCharsets.UTF_8), pkAsString, Protocol.Format.MSGPACK, withNonce = false)
+    val dataAsBytes = 3.toString.getBytes(StandardCharsets.UTF_8)
+    val sdg = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false)
 
     assert(sdg.isSuccess)
   }
@@ -28,7 +29,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val uuid = UUID.randomUUID()
     val data = UUID.randomUUID()
     val dataAsBytes = UUIDUtil.uuidToBytes(data)
-    val sdg = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, withNonce = false)
+    val sdg = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false)
 
     assert(sdg.isSuccess)
     assert(sdg.get.protocolMessage != null)
@@ -40,22 +41,22 @@ class DataGeneratorSpec extends AnyFunSuite {
     val pk = GeneratorKeyFactory.getPrivKey(Curve.Ed25519)
     val pkAsString = toBase64AsString(pk.getRawPrivateKey)
     val uuid = UUID.randomUUID()
-    val data = Random.nextBytes(10)
-    val res = DataGenerator.buildMessage(uuid, data, pkAsString, Protocol.Format.MSGPACK, withNonce = true)
+    val dataAsBytes = Random.nextBytes(10)
+    val res = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = true)
 
     assert(res.isSuccess)
     assert(res.get.protocolMessage != null)
     assert(res.get.upp.nonEmpty)
     assert(res.get.hash.nonEmpty)
 
-    val res2 = DataGenerator.buildMessage(uuid, data, pkAsString, Protocol.Format.MSGPACK, withNonce = false)
+    val res2 = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false)
 
     assert(res2.isSuccess)
     assert(res2.get.protocolMessage != null)
     assert(res2.get.upp.nonEmpty)
     assert(res2.get.hash.nonEmpty)
 
-    val res3 = DataGenerator.buildMessage(uuid, data, pkAsString, Protocol.Format.MSGPACK, withNonce = false)
+    val res3 = DataGenerator.buildMessage(uuid, dataAsBytes, pkAsString, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false)
 
     assert(res3.isSuccess)
     assert(res3.get.protocolMessage != null)
@@ -77,7 +78,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val data = UUID.randomUUID()
     val dataAsBytes = UUIDUtil.uuidToBytes(data)
     val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
-    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, withNonce = false) match {
+    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false) match {
       case Failure(exception) => fail(exception)
       case Success(value) =>
         assert(value.protocolMessage != null)
@@ -94,7 +95,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val data = UUID.randomUUID()
     val dataAsBytes = UUIDUtil.uuidToBytes(data)
     val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
-    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, withNonce = false) match {
+    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false) match {
       case Failure(exception) => fail(exception)
       case Success(value) =>
         assert(value.protocolMessage != null)
@@ -110,7 +111,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val uuid = UUID.randomUUID()
     val dataAsBytes = Array(1.toByte)
     val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
-    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, withNonce = false) match {
+    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false) match {
       case Failure(exception) => fail(exception)
       case Success(value) =>
         assert(value.protocolMessage != null)
@@ -126,7 +127,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val uuid = UUID.randomUUID()
     val dataAsBytes = "1".getBytes()
     val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
-    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, withNonce = false) match {
+    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false) match {
       case Failure(exception) => fail(exception)
       case Success(value) =>
         assert(value.protocolMessage != null)
@@ -142,7 +143,7 @@ class DataGeneratorSpec extends AnyFunSuite {
     val uuid = UUID.randomUUID()
     val dataAsBytes = """{"data":"let's do it, ich möchte, nämlich"}""".stripMargin.getBytes(StandardCharsets.UTF_8)
     val protocol: Protocol = new SimpleProtocolImpl(uuid, pk)
-    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, withNonce = false) match {
+    DataGenerator.buildMessage(uuid, dataAsBytes, protocol, Protocol.Format.MSGPACK, DataGenerator.SHA512, withNonce = false) match {
       case Failure(exception) => fail(exception)
       case Success(value) =>
         assert(value.protocolMessage != null)
