@@ -103,7 +103,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
         logger.info("body={}", asString)
       }
 
-      DataGenerator.single(identity, asBytes, privateKey, Protocol.Format.MSGPACK, withNonce = false) match {
+      DataGenerator.buildMessage(identity, asBytes, privateKey, Protocol.Format.MSGPACK, withNonce = false) match {
         case Failure(exception) => throw exception
         case Success(data) =>
 

@@ -60,7 +60,7 @@ object Catalina extends Logging {
       logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
 
       DataGenerator
-        .single(GenerateRandomTimestamp.uuid, Random.nextBytes(64), GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK, withNonce = true)
+        .buildMessage(GenerateRandomTimestamp.uuid, Random.nextBytes(64), GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK, withNonce = true)
         .foreach { x =>
           logger.info("upp={}", x.uppAsHex)
           logger.info("hash={}", x.hashAsBase64)
@@ -118,7 +118,7 @@ object Catalina extends Logging {
           case _ => logger.info(s"$source={}", new String(data, StandardCharsets.UTF_8))
         }
 
-        DataGenerator.single(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce) match {
+        DataGenerator.buildMessage(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce) match {
           case Failure(exception) =>
             logger.info("Error creating protocol message " + exception.getMessage)
           case Success(sd) =>
