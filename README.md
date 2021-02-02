@@ -85,7 +85,7 @@ To install the latest version: [List of releases](https://github.com/Carlos-Augu
 _Download_ 
 
 ```shell script
-curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.7/install.sh --output install.sh
+curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.8/install.sh --output install.sh
 ```
 
 _Make it executable_ 
