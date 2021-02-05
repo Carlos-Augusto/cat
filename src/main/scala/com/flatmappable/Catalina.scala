@@ -47,6 +47,7 @@ object Catalina extends Logging {
   object GenerateRandomTimestamp extends Command(description = "Creates a random upp and hash") {
     var uuid = arg[UUID](description = "UUID for the identity")
     var privateKey = arg[String](description = "Private Key for UUID for the registered identity")
+    var withSha256 = opt[Boolean](description = "Create message digest with sha256. The default is sha512", default = false, abbrev = "-s")
     var anchor = opt[Boolean](description = "Anchor", abbrev = "-a", default = false)
     var password = opt[String](description = "Password for your identity, only needed when 'Anchoring'", default = "")
 
@@ -60,7 +61,14 @@ object Catalina extends Logging {
       logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
 
       DataGenerator
-        .buildMessage(GenerateRandomTimestamp.uuid, Random.nextBytes(64), GenerateRandomTimestamp.privateKey, Protocol.Format.MSGPACK, withNonce = true)
+        .buildMessage(
+          GenerateRandomTimestamp.uuid,
+          Random.nextBytes(64),
+          GenerateRandomTimestamp.privateKey,
+          Protocol.Format.MSGPACK,
+          if (withSha256) DataGenerator.SHA256 else DataGenerator.SHA512,
+          withNonce = true
+        )
         .foreach { x =>
           logger.info("upp={}", x.uppAsHex)
           logger.info("hash={}", x.hashAsBase64)
@@ -76,6 +84,7 @@ object Catalina extends Logging {
   object CreateTimestamp extends Command(description = "Creates a secure timestamp from the  provided using the ubirch network") {
     var readLine = opt[Boolean](description = "Read data from console", default = false, abbrev = "-l")
     var withNonce = opt[Boolean](description = "Add a nonce to the message digest", default = false, abbrev = "-n")
+    var withSha256 = opt[Boolean](description = "Create message digest with sha256. The default is sha512", default = false, abbrev = "-s")
     var text = opt[String](description = "The text you would like to timestamp", default = "")
     var file = opt[File](description = "The path to the file to timestamp", default = new File(""))
     var uuid = arg[UUID](description = "UUID for the identity")
@@ -118,29 +127,36 @@ object Catalina extends Logging {
           case _ => logger.info(s"$source={}", new String(data, StandardCharsets.UTF_8))
         }
 
-        DataGenerator.buildMessage(CreateTimestamp.uuid, data, CreateTimestamp.privateKey, Protocol.Format.MSGPACK, CreateTimestamp.withNonce) match {
-          case Failure(exception) =>
-            logger.info("Error creating protocol message " + exception.getMessage)
-          case Success(sd) =>
+        DataGenerator.buildMessage(
+          CreateTimestamp.uuid,
+          data,
+          CreateTimestamp.privateKey,
+          Protocol.Format.MSGPACK,
+          if (withSha256) DataGenerator.SHA256 else DataGenerator.SHA512,
+          CreateTimestamp.withNonce
+        ) match {
+            case Failure(exception) =>
+              logger.info("Error creating protocol message " + exception.getMessage)
+            case Success(sd) =>
 
-            logger.info("pm={}", sd.protocolMessage.toString)
-            logger.info("upp={}", sd.uppAsHex)
-            logger.info("signed={}", toBase64AsString(sd.protocolMessage.getSigned))
-            logger.info("hash={}", sd.hashAsBase64)
+              logger.info("pm={}", sd.protocolMessage.toString)
+              logger.info("upp={}", sd.uppAsHex)
+              logger.info("signed={}", toBase64AsString(sd.protocolMessage.getSigned))
+              logger.info("hash={}", sd.hashAsBase64)
 
-            val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = sd.hashAsBase64, upp = sd.uppAsHex), "UPP Sending")
-            val resp = timedResp.getResult
+              val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = sd.hashAsBase64, upp = sd.uppAsHex), "UPP Sending")
+              val resp = timedResp.getResult
 
-            val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
+              val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
               .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
 
-            logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
-            logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
-            logger.info("Response Body: " + pm)
-            logger.info("Response Time: (ms)" + timedResp.elapsed)
-            printStatus(resp.status)
+              logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
+              logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
+              logger.info("Response Body: " + pm)
+              logger.info("Response Time: (ms)" + timedResp.elapsed)
+              printStatus(resp.status)
 
-        }
+          }
 
       } else {
         logger.warn(s"$source data is not valid. Could be empty or file doesn't exist.")
