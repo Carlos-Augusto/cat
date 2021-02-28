@@ -85,7 +85,7 @@ To install the latest version: [List of releases](https://github.com/Carlos-Augu
 _Download_ 
 
 ```shell script
-curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.7/install.sh --output install.sh
+curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.8/install.sh --output install.sh
 ```
 
 _Make it executable_ 
@@ -170,12 +170,15 @@ HEADERS
 -------
 x-pr: The private key that belongs to the identity.
       It is the raw representation of the key, base64 encoded.
+
 x-pass: The password obtained when registering the identity.
         The passwords should be BASE64 encoded.
+
 x-proxy-HEADER-NAME: If you need to redirect especific headers to the sending 
         destination, you can use this header. Just put the header you need to 
         redirect together with the x-proxy and the value. The system will take these
         headers and plug them into the request to the sending service.
+
 Content-Type: Although not explicitily needed, you usually would use ->
  'text/plain'               for simple texts  
  'application/octet-stream' for binary data
@@ -186,12 +189,16 @@ x-json-format: When using a content type 'application/json', you can also pass t
  'compact' to format the incoming value in a compacted fashion.
  'pretty'  to format the incoming value in a more verbose, prettier fashion
  'none'    to not perform any formatting
+ 
+x-msg-digest-algo: You can select the message digest algorithm for your end hash. The one used for verifiation. 
+                   This header is optional and if not found sha512 is used.
+ 'sha256'  
+ 'sha512'  --> Default               
 
 Note:
  that when the content type is json, the system checks to see if the value is a valid json value.
  that when by default the formatting option is 'none'
       
-
 BODY
 ----
 The body should contain the data that you would like to anchor.

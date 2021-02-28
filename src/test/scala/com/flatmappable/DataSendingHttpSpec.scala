@@ -704,4 +704,129 @@ class DataSendingHttpSpec extends AnyFunSuite {
 
   }
 
+  test("CatalinaHttp.send should detect message digest option -- sha256") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = "hola"
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data.getBytes(StandardCharsets.US_ASCII),
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "x-msg-digest-algo" -> "sha256",
+          "content-type" -> "text/plain; charset=US-ASCII"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.is2xx)
+      assert(res.statusCode == 200)
+      assert(new String(res.bytes) == """{"status":200,"message":"Success","data":"siHZ27CDp/M0KNfCo8MZiuklYU1wIQ4ocWzKp81N23k="}""")
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should detect message digest option -- sha512") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = "hola"
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data.getBytes(StandardCharsets.US_ASCII),
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "x-msg-digest-algo" -> "sha512",
+          "content-type" -> "text/plain; charset=US-ASCII"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.is2xx)
+      assert(res.statusCode == 200)
+      assert(new String(res.bytes) == """{"status":200,"message":"Success","data":"6D6FNdb2iUk+WBm9YKo+X9y6lA5tERq2+1w08k+GSWvzcm4r9OxZ1tL1oq6x5PEDKD59ZOT0nAO0xHJcs2Hncw=="}""")
+      assert(processed == data)
+
+    }
+
+  }
+
+  test("CatalinaHttp.send should use default message digest option -- sha512") {
+
+    var processed: String = null
+
+    val cat = new CatalinaHttpBase {
+      override def sendData(uuid: UUID, password: String, hash: Array[Byte], upp: Array[Byte], extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
+        ResponseData(200, Array.empty, Array.empty[Byte])
+      }
+
+      override protected def sendBody(contentType: Option[String], charset: Option[Charset], headers: Map[String, collection.Seq[String]], body: Array[Byte]): (String, Array[Byte]) = {
+        val (a, b) = super.sendBody(contentType, charset, headers, body)
+        processed = a
+        (a, b)
+      }
+    }
+
+    withServer(cat) { host =>
+
+      val data = "hola"
+
+      val res = Try(requests.post(
+        s"$host/send/23949125-e476-4e06-b72c-5dde2cc247b0",
+        data = data.getBytes(StandardCharsets.US_ASCII),
+        headers = Map(
+          "x-pk" -> "hcOakLL7KO6XmsdZYQdb9uZeO5/IwxqmgAudIzXQpgE=",
+          "x-pass" -> "12345678",
+          "content-type" -> "text/plain; charset=US-ASCII"
+        )
+      ))
+        .recover { case e: RequestFailedException => e.response }
+        .get
+
+      assert(res.is2xx)
+      assert(res.statusCode == 200)
+      assert(new String(res.bytes) == """{"status":200,"message":"Success","data":"6D6FNdb2iUk+WBm9YKo+X9y6lA5tERq2+1w08k+GSWvzcm4r9OxZ1tL1oq6x5PEDKD59ZOT0nAO0xHJcs2Hncw=="}""")
+      assert(processed == data)
+
+    }
+
+  }
+
 }

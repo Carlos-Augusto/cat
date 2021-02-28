@@ -18,24 +18,27 @@ case class SimpleDataGeneration(UUID: UUID, protocolMessage: ProtocolMessage, up
 
 object DataGenerator {
 
-  def single(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format, withNonce: Boolean): Try[SimpleDataGeneration] = {
+  final lazy val SHA512 = MessageDigest.getInstance("SHA-512")
+  final lazy val SHA256 = MessageDigest.getInstance("SHA-256")
+
+  def buildMessage(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format, messageDigest: MessageDigest, withNonce: Boolean): Try[SimpleDataGeneration] = {
     for {
       clientKey <- Try(KeyPairHelper.privateKeyEd25519(privateKey))
       protocol: Protocol <- Try(new SimpleProtocolImpl(uuid, clientKey))
-      msg <- buildMessage(uuid, protocol, format, data, withNonce)
+      msg <- buildMessage(uuid, data, protocol, format, messageDigest, withNonce)
     } yield msg
   }
 
   //upp usually is in hex and hash in base64
-  def buildMessage(clientUUID: UUID, protocol: Protocol, format: Protocol.Format, data: Array[Byte], withNonce: Boolean): Try[SimpleDataGeneration] = Try {
-    val nowAsBytes = defaultDataFormat.format(System.currentTimeMillis).getBytes(StandardCharsets.UTF_8)
-    val uuidAsBytes = UUIDUtil.uuidToBytes(clientUUID)
-    val sep = ",".getBytes(StandardCharsets.UTF_8)
+  def buildMessage(uuid: UUID, data: Array[Byte], protocol: Protocol, format: Protocol.Format, messageDigest: MessageDigest, withNonce: Boolean): Try[SimpleDataGeneration] = Try {
+    lazy val nowAsBytes = defaultDataFormat.format(System.currentTimeMillis).getBytes(StandardCharsets.UTF_8)
+    lazy val sep = ",".getBytes(StandardCharsets.UTF_8)
+    lazy val uuidAsBytes = UUIDUtil.uuidToBytes(uuid)
     val message = if (withNonce) Array.concat(data, sep, nowAsBytes, sep, uuidAsBytes) else data
-    val hash = MessageDigest.getInstance("SHA-512").digest(message)
-    val pm = new ProtocolMessage(ProtocolMessage.SIGNED, clientUUID, 0x00, hash)
+    val hash = messageDigest.digest(message)
+    val pm = new ProtocolMessage(ProtocolMessage.SIGNED, uuid, 0x00, hash)
     val upp = protocol.encodeSign(pm, format)
-    SimpleDataGeneration(clientUUID, pm, upp, hash)
+    SimpleDataGeneration(uuid, pm, upp, hash)
   }
 
 }
