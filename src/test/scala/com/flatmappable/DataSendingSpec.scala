@@ -14,7 +14,7 @@ class DataSendingSpec extends AnyFunSuite {
     val extraHeaders = Map("x-h" -> Seq("uno", "dos"), "x-y" -> Seq("tres"))
     val data = UUIDUtil.uuidToBytes(uuid)
 
-    val req = DataSending.sendKeyRequest(uuid, pass, data, extraHeaders)
+    val req = DataSending.sendUPP(uuid, pass, data, extraHeaders)
     val headers = req.getAllHeaders.toList
 
     assert(req.getURI.toString == "https://niomon.dev.ubirch.com")

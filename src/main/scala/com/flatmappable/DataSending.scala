@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 
 object DataSending extends RequestClient {
 
-  def sendKeyRequest(uuid: UUID, password: String, body: Array[Byte], extraHeaders: Map[String, Seq[String]]): HttpPost = {
+  def sendUPP(uuid: UUID, password: String, body: Array[Byte], extraHeaders: Map[String, Seq[String]]): HttpPost = {
     val regRequest = new HttpPost(Configs.DATA_SENDING_URL)
     regRequest.setHeader(CONTENT_TYPE, "application/octet-stream")
     regRequest.setHeader(X_UBIRCH_HARDWARE_ID, uuid.toString)
@@ -25,7 +25,7 @@ object DataSending extends RequestClient {
   }
 
   def send(uuid: UUID, password: String, hash: String, upp: String, extraHeaders: Map[String, Seq[String]]): ResponseData[Array[Byte]] = {
-    val response = call(sendKeyRequest(uuid, password, toBytesFromHex(upp), extraHeaders))
+    val response = call(sendUPP(uuid, password, toBytesFromHex(upp), extraHeaders))
 
     doWhenOK(response.status) {
       Timestamps.insert(
