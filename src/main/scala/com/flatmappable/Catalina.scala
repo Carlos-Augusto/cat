@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.UUID
 
-import com.flatmappable.util.{ Logging, ResponseData, Timer }
+import com.flatmappable.util.{ Logging, Timer }
 import com.ubirch.protocol.Protocol
 import com.ubirch.protocol.codec.MsgPackProtocolDecoder
 import org.apache.commons.codec.binary.Hex
@@ -26,9 +26,9 @@ object Catalina extends Logging {
     def run() = {
       logger.info("Registering key for uuid={}", RegisterKey.uuid)
 
-      val (fullPrivKey, pubKey, privKey, (info, data, resp)) = KeyRegistration.newRegistration(RegisterKey.uuid)
-      logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
-      logOutput(info, data, resp)
+      val keyReg = KeyRegistration.newRegistration(RegisterKey.uuid)
+      logger.info(keyReg.getKeyInfo)
+      logOutput(keyReg)
     }
   }
 
@@ -38,9 +38,9 @@ object Catalina extends Logging {
 
       logger.info("Registering key for uuid={}", uuid)
 
-      val (fullPrivKey, pubKey, privKey, (info, data, resp)) = KeyRegistration.newRegistration(uuid)
-      logger.info("\n pub-key={} \n priv-key={} \n priv-key-full={}", pubKey, privKey, fullPrivKey)
-      logOutput(info, data, resp)
+      val keyReg = KeyRegistration.newRegistration(uuid)
+      logger.info(keyReg.getKeyInfo)
+      logOutput(keyReg)
     }
   }
 
@@ -200,11 +200,10 @@ object Catalina extends Logging {
 
   }
 
-  def logOutput(info: String, data: String, resp: ResponseData[String]): Unit = {
-    logger.info("Info: " + info)
-    logger.info("Data: " + data)
-    logger.info("Response: " + resp.body)
-    printStatus(resp.status)
+  def logOutput(keyRegistration: KeyRegistration): Unit = {
+    logger.info("Data: " + keyRegistration.keyCreationData)
+    logger.info("Response: " + keyRegistration.responseData.body)
+    printStatus(keyRegistration.responseData.status)
   }
 
   def main(args: Array[String]): Unit = {
