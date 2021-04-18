@@ -15,7 +15,7 @@ package object flatmappable extends DataStore with Logging {
 
   implicit lazy val formats: Formats = Serialization.formats(NoTypeHints) ++ org.json4s.ext.JavaTypesSerializers.all
 
-  final val version = "0.0.8"
+  final val version = "0.0.9"
 
   final val clock: Clock = Clock.systemUTC
 

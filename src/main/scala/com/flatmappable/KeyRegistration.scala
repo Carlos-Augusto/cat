@@ -9,6 +9,18 @@ import com.ubirch.crypto.PrivKey
 import org.joda.time.DateTime
 import org.json4s.jackson.JsonMethods._
 
+case class KeyRegistration(keyCreationData: String, clientKey: PrivKey, responseData: ResponseData[String]) {
+  def getKeyInfo: String = {
+    s"""
+      |Key Creation Data
+      |-----------------
+      |pub-key=${clientKey.getRawPublicKeyAsString}
+      |priv-key=${clientKey.getRawPrivateKeyAsString}
+      |priv-key-full=${clientKey.getPrivateKeyAsString}
+      |""".stripMargin
+  }
+}
+
 object KeyRegistration {
 
   def pubKeyInfoData(
@@ -59,7 +71,7 @@ object KeyRegistration {
       algo: Symbol = KeyPairHelper.ECC_ED25519,
       clientKey: PrivKey = KeyPairHelper.privateKeyEd25519,
       created: Long = now
-  ): (PrivKey, String, String) = {
+  ): (PrivKey, String) = {
     val pubKey = clientKey.getRawPublicKeyAsString
     val info = compact(parse(pubKeyInfoData(uuid, algo, pubKey, created)))
     val signature = clientKey.sign(info.getBytes(StandardCharsets.UTF_8))
@@ -68,15 +80,14 @@ object KeyRegistration {
 
     if (!verification) throw new Exception("Key creation validation failed")
 
-    (clientKey, info, data)
+    (clientKey, data)
 
   }
 
-  def newRegistration(uuid: UUID, algo: Symbol = KeyPairHelper.ECC_ED25519) = {
+  def newRegistration(uuid: UUID, algo: Symbol = KeyPairHelper.ECC_ED25519): KeyRegistration = {
 
     val clientKey = KeyPairHelper.getClientKey(algo)
-    val (_, info, data) = createKey(uuid, algo = algo, clientKey = clientKey)
-    val (key, pubKey, privKey) = clientKey.asString
+    val (_, data) = createKey(uuid, algo = algo, clientKey = clientKey)
 
     val response = KeyCreation.create(data)
 
@@ -87,15 +98,16 @@ object KeyRegistration {
           Configs.ENV,
           uuid,
           algo = algo.toString(),
-          privKey = key,
-          rawPrivKey = privKey,
-          rawPubKey = pubKey,
+          privKey = clientKey.getPrivateKeyAsString,
+          rawPrivKey = clientKey.getRawPrivateKeyAsString,
+          rawPubKey = clientKey.getRawPublicKeyAsString,
           createdAt = new DateTime()
         )
       )
     }
 
-    (key, pubKey, privKey, (info, data, response))
+    KeyRegistration(data, clientKey, response)
+
   }
 
 }
