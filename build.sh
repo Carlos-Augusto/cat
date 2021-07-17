@@ -10,6 +10,11 @@ if [ -z "$1" ]
     exit 1
 fi
 
+if [ ! -d "$INSTALL_FOLDER" ]; then
+  echo "${INSTALL_FOLDER} does not exist ..."
+  exit 1
+fi
+
 echo "Building/Installing in $INSTALL_FOLDER ... version $VERSION"
 rm "$INSTALL_FOLDER" -rf
 mvn clean package

@@ -50,6 +50,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
      |- PORT: ${Configs.CAT_HTTP_PORT}
      |- HOST: $host
      |- DATA_SENDING_URL:${Configs.DATA_SENDING_URL}
+     |- RUNTIME:${Runtime.version().toString}
      |""".stripMargin
 
   @cask.get("/configs")
