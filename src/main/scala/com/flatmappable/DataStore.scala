@@ -8,6 +8,8 @@ import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.getquill.context.sql.SqlContext
 import io.getquill.{ MappedEncoding, SnakeCase, SqliteJdbcContext }
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.MigrationInfoService
+import org.flywaydb.core.api.output.MigrateResult
 import org.joda.time.{ DateTime, DateTimeZone }
 
 trait CustomEncodingsBase {
@@ -81,9 +83,9 @@ trait DBMigration {
 
   def flyway: Flyway
 
-  def migrate() = flyway.migrate()
-  def info() = flyway.info()
-  def pending() = info.pending().nonEmpty
+  def migrate(): MigrateResult = flyway.migrate()
+  def info(): MigrationInfoService = flyway.info()
+  def pending(): Boolean = info().pending().nonEmpty
 
 }
 

@@ -12,14 +12,14 @@ import scala.util.Try
 
 class DataSendingHttpSpec extends AnyFunSuite {
 
-  def withServer[T](example: cask.main.Main)(f: String => T): T = {
+  def withServer[T](instance: cask.main.Main)(f: String => T): T = {
     val server = Undertow.builder
-      .addHttpListener(8081, CatalinaHttp.host)
-      .setHandler(example.defaultHandler)
+      .addHttpListener(instance.port, instance.host)
+      .setHandler(instance.defaultHandler)
       .build
     server.start()
     val res =
-      try f("http://localhost:8081")
+      try f("http://" + instance.host + ":" + instance.port)
       finally server.stop()
     res
 
