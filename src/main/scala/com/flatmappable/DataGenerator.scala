@@ -18,8 +18,8 @@ case class SimpleDataGeneration(UUID: UUID, protocolMessage: ProtocolMessage, up
 
 object DataGenerator {
 
-  final lazy val SHA512 = MessageDigest.getInstance("SHA-512")
-  final lazy val SHA256 = MessageDigest.getInstance("SHA-256")
+  final def SHA512: MessageDigest = MessageDigest.getInstance("SHA-512")
+  final def SHA256: MessageDigest = MessageDigest.getInstance("SHA-256")
 
   def buildMessage(uuid: UUID, data: Array[Byte], privateKey: String, format: Protocol.Format, messageDigest: MessageDigest, withNonce: Boolean): Try[SimpleDataGeneration] = {
     for {

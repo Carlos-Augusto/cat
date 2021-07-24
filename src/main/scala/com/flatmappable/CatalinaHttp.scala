@@ -47,9 +47,10 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
     s"""
      |- VERSION: $version
      |- ENV: ${Configs.ENV.name}
-     |- PORT: ${Configs.CAT_HTTP_PORT}
      |- HOST: $host
+     |- PORT: ${Configs.CAT_HTTP_PORT}
      |- DATA_SENDING_URL:${Configs.DATA_SENDING_URL}
+     |- RUNTIME:$runtime
      |""".stripMargin
 
   @cask.get("/configs")
@@ -183,7 +184,7 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
 
   override def port: Int = Configs.CAT_HTTP_PORT
 
-  override def host: String = "0.0.0.0"
+  override def host: String = Configs.CAT_HTTP_HOST
 
   initialize()
 

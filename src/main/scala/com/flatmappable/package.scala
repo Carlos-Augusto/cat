@@ -17,6 +17,8 @@ package object flatmappable extends DataStore with Logging {
 
   final val version = "0.0.9"
 
+  final val runtime = Runtime.version().toString
+
   final val clock: Clock = Clock.systemUTC
 
   final val PATH_HOME: Path = Paths.get(Configs.DATA_FOLDER).resolve(".cat").normalize()
@@ -36,10 +38,10 @@ package object flatmappable extends DataStore with Logging {
   }
 
   def init(http: Boolean = false): Unit = {
+    logger.info("Version={} Environment={} Runtime={}", version, Configs.ENV.name, runtime)
     if (http) {
-      logger.info("Port={}", Configs.CAT_HTTP_PORT)
+      logger.info("Host={} Port={}", Configs.CAT_HTTP_HOST, Configs.CAT_HTTP_PORT)
     }
-    logger.info("Environment={}", Configs.ENV.name)
     if (!PATH_HOME.toFile.exists()) {
       logger.info("Creating home=" + PATH_HOME.toFile.toString)
       Files.createDirectory(PATH_HOME)

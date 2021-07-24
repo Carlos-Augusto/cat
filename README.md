@@ -20,20 +20,13 @@ This is a tool that allows to use the _Ubirch Trust Service_. This tool is a com
 Its features are:
 
 * **create timestamps:** There are different kinds of timestamps you can create. You can create a timestamp based
-on a file, on text, on user input, and random text.
+on a file, on text, on user input, and random text. All the above mentioned timestamps can be salted/added with a nonce.
 
-All the above mentioned timestamps can be salted/added with a nonce.
-
-* **register keys**
-
-In order to send create a timestamp, a proper public key should be registered on the _Ubirch Trust Service_.
-This option allows you to quickly register an existing key, or it allows you to generate a random key and 
+* **register keys** In order to send create a timestamp, a proper public key should be registered on the _Ubirch Trust Service_. This option allows you to quickly register an existing key, or it allows you to generate a random key and 
 identity id.
 
-* **verify timestamps**
-
-This feature verifies the generated timestamps. You can select the type of verification 
-you would like to have. 
+* **verify timestamps** This feature verifies the generated timestamps. You can select the type of verification 
+you would like to have.
 
 ## Env Variables
 
@@ -44,37 +37,43 @@ By default dev wil be used.
 
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
 
-```
+```shell
 export CAT_ENV=dev 
 ```
 
 ### Data Folder
 
-```
+```shell
 export CAT_DATA_FOLDER=$HOME 
+```
+
+### Http Host
+
+```shell
+export CAT_HTTP_HOST="0.0.0.0" 
 ```
 
 ### Http Port
 
-```
+```shell
 export CAT_HTTP_PORT=8080 
 ```
 
 ### Data Sending Url
 
-```
+```shell
 export CAT_DATA_SENDING_URL=https://ubproxy.enchain.it/ubproxy/api/v1/upp 
 ```
 
 ### Key Registration Url
 
-```
+```shell
 export CAT_KEY_REGISTRATION_URL=https://key.dev.ubirch.com/api/keyService/v1/pubkey 
 ```
 
 ### Verification Base Url
 
-```
+```shell
 export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
 ```
 
@@ -84,19 +83,19 @@ To install the latest version: [List of releases](https://github.com/Carlos-Augu
 
 _Download_ 
 
-```shell script
+```shell
 curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.9/install.sh --output install.sh
 ```
 
 _Make it executable_ 
 
-```shell script
+```shell
 chmod +x install.sh
 ```
 
 _Options_
 
-```shell script
+```shell
 install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
 -r -> will remove possible existing install
 -c -> will remove possible existing install on custom place
@@ -107,13 +106,14 @@ install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
 _Example_
 
 Run script with best option for you.
-```shell script
+
+```shell
 ./install.sh -r
 ```
 
 ## Run the CLI
 
-```shell script
+```shell
 $ catalina
 ```
 
@@ -123,27 +123,29 @@ you can use the version command (_catalina version_)
 ## Install from sources
 
 Clone the project
-```shell script
+
+```shell
 git clone git@github.com:Carlos-Augusto/cat.git 
 ```
 
 Enter the cat folder or where you cloned it into
-```shell script
+```shell
 cd cat 
 ```
 
 Run the installation script. Use as argument the path for your catalina install.
-```shell script
+
+```shell
 ./build.sh PATH_FOR_INSTALL
 ```
 
 For quick access, add your installation folder to your path.
-```shell script
+```shell
 export PATH=$INSTALL_FOLDER:\$PATH"
 ```
 
 Run to see the options
-```shell script
+```shell
 ./catalina.sh
 ```
 
@@ -154,7 +156,7 @@ Catalina runs on the port 8080
 
 ### Run the HTTP interface:
 
-```shell script
+```shell
 $ catalina-http
 ```
 
@@ -206,7 +208,7 @@ The body should contain the data that you would like to anchor.
 
 #### Example
 
-```shell script
+```shell
 curl -s -X POST -H 'x-pk:PRIV_KEY' -H 'x-pass:BASE64_PASS' -d 'HELLO WORLD' http://localhost:8080/send/7A44acd5-91e1-4230-833a-2f386e09b96f
 ```
 

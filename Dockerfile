@@ -1,9 +1,10 @@
-FROM maven:3.6-openjdk-8 as build
+FROM maven:3.8-openjdk-11-slim as build
 COPY . /cat
 WORKDIR /cat
+RUN mkdir bin
 RUN ./buildHttp.sh /cat/bin
 
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
 EXPOSE 8080/tcp
 COPY --from=build /cat/bin /cat
 WORKDIR /cat
