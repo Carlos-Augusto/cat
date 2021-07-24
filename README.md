@@ -37,43 +37,43 @@ By default dev wil be used.
 
 To modify this, export the following variable. The following are the expected values: [dev, demo, prod]
 
-```
+```shell
 export CAT_ENV=dev 
 ```
 
 ### Data Folder
 
-```
+```shell
 export CAT_DATA_FOLDER=$HOME 
 ```
 
 ### Http Host
 
-```
+```shell
 export CAT_HTTP_HOST="0.0.0.0" 
 ```
 
 ### Http Port
 
-```
+```shell
 export CAT_HTTP_PORT=8080 
 ```
 
 ### Data Sending Url
 
-```
+```shell
 export CAT_DATA_SENDING_URL=https://ubproxy.enchain.it/ubproxy/api/v1/upp 
 ```
 
 ### Key Registration Url
 
-```
+```shell
 export CAT_KEY_REGISTRATION_URL=https://key.dev.ubirch.com/api/keyService/v1/pubkey 
 ```
 
 ### Verification Base Url
 
-```
+```shell
 export CAT_VERIFICATION_BASE_URL=https://verify.dev.ubirch.com
 ```
 
