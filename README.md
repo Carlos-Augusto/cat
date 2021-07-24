@@ -20,20 +20,13 @@ This is a tool that allows to use the _Ubirch Trust Service_. This tool is a com
 Its features are:
 
 * **create timestamps:** There are different kinds of timestamps you can create. You can create a timestamp based
-on a file, on text, on user input, and random text.
+on a file, on text, on user input, and random text. All the above mentioned timestamps can be salted/added with a nonce.
 
-All the above mentioned timestamps can be salted/added with a nonce.
-
-* **register keys**
-
-In order to send create a timestamp, a proper public key should be registered on the _Ubirch Trust Service_.
-This option allows you to quickly register an existing key, or it allows you to generate a random key and 
+* **register keys** In order to send create a timestamp, a proper public key should be registered on the _Ubirch Trust Service_. This option allows you to quickly register an existing key, or it allows you to generate a random key and 
 identity id.
 
-* **verify timestamps**
-
-This feature verifies the generated timestamps. You can select the type of verification 
-you would like to have. 
+* **verify timestamps** This feature verifies the generated timestamps. You can select the type of verification 
+you would like to have.
 
 ## Env Variables
 
@@ -52,6 +45,12 @@ export CAT_ENV=dev
 
 ```
 export CAT_DATA_FOLDER=$HOME 
+```
+
+### Http Host
+
+```
+export CAT_HTTP_HOST="0.0.0.0" 
 ```
 
 ### Http Port
