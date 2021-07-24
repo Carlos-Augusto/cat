@@ -83,19 +83,19 @@ To install the latest version: [List of releases](https://github.com/Carlos-Augu
 
 _Download_ 
 
-```shell script
+```shell
 curl -s -L https://github.com/Carlos-Augusto/cat/releases/download/0.0.9/install.sh --output install.sh
 ```
 
 _Make it executable_ 
 
-```shell script
+```shell
 chmod +x install.sh
 ```
 
 _Options_
 
-```shell script
+```shell
 install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
 -r -> will remove possible existing install
 -c -> will remove possible existing install on custom place
@@ -106,13 +106,14 @@ install [-r] [-p] [-c CAT_HOME] [-e CAT_HOME]
 _Example_
 
 Run script with best option for you.
-```shell script
+
+```shell
 ./install.sh -r
 ```
 
 ## Run the CLI
 
-```shell script
+```shell
 $ catalina
 ```
 
@@ -122,27 +123,29 @@ you can use the version command (_catalina version_)
 ## Install from sources
 
 Clone the project
-```shell script
+
+```shell
 git clone git@github.com:Carlos-Augusto/cat.git 
 ```
 
 Enter the cat folder or where you cloned it into
-```shell script
+```shell
 cd cat 
 ```
 
 Run the installation script. Use as argument the path for your catalina install.
-```shell script
+
+```shell
 ./build.sh PATH_FOR_INSTALL
 ```
 
 For quick access, add your installation folder to your path.
-```shell script
+```shell
 export PATH=$INSTALL_FOLDER:\$PATH"
 ```
 
 Run to see the options
-```shell script
+```shell
 ./catalina.sh
 ```
 
@@ -153,7 +156,7 @@ Catalina runs on the port 8080
 
 ### Run the HTTP interface:
 
-```shell script
+```shell
 $ catalina-http
 ```
 
@@ -205,7 +208,7 @@ The body should contain the data that you would like to anchor.
 
 #### Example
 
-```shell script
+```shell
 curl -s -X POST -H 'x-pk:PRIV_KEY' -H 'x-pass:BASE64_PASS' -d 'HELLO WORLD' http://localhost:8080/send/7A44acd5-91e1-4230-833a-2f386e09b96f
 ```
 
