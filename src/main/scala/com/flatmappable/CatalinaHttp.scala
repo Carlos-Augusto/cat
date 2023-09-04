@@ -107,10 +107,6 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
 
       val (asString, asBytes) = sendBody(contentType, charset, request.headers, body)
 
-      if (asString.nonEmpty) {
-        logger.info("body={}", asString)
-      }
-
       DataGenerator.buildMessage(
         identity,
         asBytes,
@@ -125,6 +121,13 @@ abstract class CatalinaHttpBase extends cask.MainRoutes with Logging {
             val res = sendData(identity, pass, data.hash, data.upp, headersToRedirect)
 
             if (res.status >= OK && res.status < MULTIPLE_CHOICE) {
+              if (Configs.CAT_HTTP_LOG_ON_SUCCESS) {
+                if (asString.nonEmpty) {
+                  logger.info(s"UPP sent=${data.hashAsBase64} body=$asString Status=${res.status}")
+                } else {
+                  logger.info(s"UPP sent=${data.hashAsBase64} Status=${res.status}")
+                }
+              }
               cask.Response(ResponseMessage(res.status, "Success", data.hashAsBase64).toJson, res.status)
             } else if (res.status == KNOWN_UPP) {
               logger.error(s"UPP already known=${data.hashAsBase64} Status=${res.status}")
