@@ -14,14 +14,14 @@ import org.joda.time.{ DateTime, DateTimeZone }
 
 trait CustomEncodingsBase {
 
-  implicit def encodeUUID = MappedEncoding[UUID, String](Option(_).map(_.toString).getOrElse(""))
-  implicit def decodeUUID = MappedEncoding[String, UUID](x => UUID.fromString(x))
+  implicit def encodeUUID: MappedEncoding[UUID, String] = MappedEncoding[UUID, String](Option(_).map(_.toString).getOrElse(""))
+  implicit def decodeUUID: MappedEncoding[String, UUID] = MappedEncoding[String, UUID](x => UUID.fromString(x))
 
-  implicit def encodeSymbol = MappedEncoding[Symbol, String](Option(_).map(_.name).getOrElse(""))
-  implicit def decodeSymbol = MappedEncoding[String, Symbol](x => Symbol(x))
+  implicit def encodeSymbol: MappedEncoding[Symbol, String] = MappedEncoding[Symbol, String](Option(_).map(_.name).getOrElse(""))
+  implicit def decodeSymbol: MappedEncoding[String, Symbol] = MappedEncoding[String, Symbol](x => Symbol(x))
 
-  implicit def encodeDate = MappedEncoding[DateTime, String](Option(_).map(_.withZone(DateTimeZone.UTC).toString).getOrElse(""))
-  implicit def decodeDate = MappedEncoding[String, DateTime](x => DateTime.parse(x).withZone(DateTimeZone.UTC))
+  implicit def encodeDate: MappedEncoding[DateTime, String] = MappedEncoding[DateTime, String](Option(_).map(_.withZone(DateTimeZone.UTC).toString).getOrElse(""))
+  implicit def decodeDate: MappedEncoding[String, DateTime] = MappedEncoding[String, DateTime](x => DateTime.parse(x).withZone(DateTimeZone.UTC))
 
 }
 
@@ -36,7 +36,7 @@ trait KeyRowDAO extends CustomEncodingsBase {
   object KeyRow {
 
     val insertQ = quote {
-      (k: KeyRow) => query[KeyRow].insert(k)
+      (k: KeyRow) => query[KeyRow].insertValue(k)
     }
 
     val byIdQ = quote {
@@ -63,7 +63,7 @@ trait TimestampRowDAO extends CustomEncodingsBase {
   object TimestampRow {
 
     val insertQ = quote {
-      (t: TimestampRow) => query[TimestampRow].insert(t)
+      (t: TimestampRow) => query[TimestampRow].insertValue(t)
     }
 
     val byIdQ = quote {
