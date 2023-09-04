@@ -44,63 +44,38 @@ object Catalina extends Logging {
     }
   }
 
-  object GenerateRandomTimestamp extends Command(description = "Creates a random upp and hash") {
-    var uuid = arg[UUID](description = "UUID for the identity")
-    var privateKey = arg[String](description = "Private Key for UUID for the registered identity")
-    var withSha256 = opt[Boolean](description = "Create message digest with sha256. The default is sha512", default = false, abbrev = "-s")
-    var anchor = opt[Boolean](description = "Anchor", abbrev = "-a", default = false)
-    var password = opt[String](description = "Password for your identity, only needed when 'Anchoring'", default = "")
-
-    validate {
-      if (moreThanOne(anchor, password.isEmpty)) {
-        parsingError("Use --password too please")
-      }
-    }
-
-    def run() = {
-      logger.info("Generating random UPP for uuid={}", GenerateRandomTimestamp.uuid)
-
-      DataGenerator
-        .buildMessage(
-          GenerateRandomTimestamp.uuid,
-          Random.nextBytes(64),
-          GenerateRandomTimestamp.privateKey,
-          Protocol.Format.MSGPACK,
-          if (withSha256) DataGenerator.SHA256 else DataGenerator.SHA512,
-          withNonce = true
-        )
-        .foreach { x =>
-          logger.info("upp={}", x.uppAsHex)
-          logger.info("hash={}", x.hashAsBase64)
-          if (GenerateRandomTimestamp.anchor && GenerateRandomTimestamp.password.nonEmpty) {
-            val resp = DataSending.send(uuid = x.UUID, password = GenerateRandomTimestamp.password, hash = x.hashAsBase64, upp = x.uppAsHex)
-            printStatus(resp.status)
-          }
-        }
-    }
-
-  }
-
   object CreateTimestamp extends Command(description = "Creates a secure timestamp from the  provided using the ubirch network") {
-    var readLine = opt[Boolean](description = "Read data from console", default = false, abbrev = "-l")
+    var uuid = arg[UUID](description = "UUID for the identity")
+    var authToken = opt[String](description = "Password in base64 or Anchoring Token for your identity, only needed when 'Anchoring'", default = "")
+
+    var privateKey = arg[String](description = "Private Key for UUID for the registered identity")
+
     var withNonce = opt[Boolean](description = "Add a nonce to the message digest", default = false, abbrev = "-n")
     var withSha256 = opt[Boolean](description = "Create message digest with sha256. The default is sha512", default = false, abbrev = "-s")
+
+    var random = opt[Boolean](description = "Creates random bytes to send", default = false, abbrev = "-r")
+    var readLine = opt[Boolean](description = "Read data from console", default = false, abbrev = "-l")
     var text = opt[String](description = "The text you would like to timestamp", default = "")
     var file = opt[File](description = "The path to the file to timestamp", default = new File(""))
-    var uuid = arg[UUID](description = "UUID for the identity")
-    var password = arg[String](description = "Password for your identity")
-    var privateKey = arg[String](description = "Private Key for UUID for the registered identity")
+
+    var anchor = opt[Boolean](description = "if provided, it will attempt to send package to backend", abbrev = "-a", default = true)
 
     validate {
-      if (moreThanOne(text.nonEmpty, file.getName.nonEmpty, readLine)) {
-        parsingError("Use --text or --file or --l")
+      if (moreThanOne(random, text.nonEmpty, file.getName.nonEmpty, readLine)) {
+        parsingError("Use --random or --text or --file ")
+      }
+      if (moreThanOne(anchor, authToken.isEmpty)) {
+        parsingError("Use --auth-token too please")
       }
     }
 
     def run() = {
       var source = ""
       val data: Array[Byte] = {
-        if (CreateTimestamp.readLine) {
+        if (CreateTimestamp.random) {
+          source = "random"
+          Hex.encodeHexString(Random.nextBytes(16)).getBytes(StandardCharsets.UTF_8)
+        } else if (CreateTimestamp.readLine) {
           logger.info("Please enter your data (end with 'return')'")
           source = "line"
           scala.io.StdIn.readLine().getBytes(StandardCharsets.UTF_8)
@@ -144,17 +119,21 @@ object Catalina extends Logging {
               logger.info("signed={}", toBase64AsString(sd.protocolMessage.getSigned))
               logger.info("hash={}", sd.hashAsBase64)
 
-              val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.password, hash = sd.hashAsBase64, upp = sd.uppAsHex), "UPP Sending")
-              val resp = timedResp.getResult
+              if (CreateTimestamp.anchor) {
 
-              val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
-              .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
+                val timedResp = Timer.time(DataSending.send(uuid = CreateTimestamp.uuid, password = CreateTimestamp.authToken, hash = sd.hashAsBase64, upp = sd.uppAsHex), "UPP Sending")
+                val resp = timedResp.getResult
 
-              logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
-              logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
-              logger.info("Response Body: " + pm)
-              logger.info("Response Time: (ms)" + timedResp.elapsed)
-              printStatus(resp.status)
+                val pm = Try(MsgPackProtocolDecoder.getDecoder.decode(resp.body).toString)
+                  .getOrElse(new String(resp.body, StandardCharsets.UTF_8))
+
+                logger.info("Response Headers: " + resp.headers.toList.mkString(", "))
+                logger.info("Response BodyHex: " + Hex.encodeHexString(resp.body))
+                logger.info("Response Body: " + pm)
+                logger.info("Response Time: (ms)" + timedResp.elapsed)
+                printStatus(resp.status)
+
+              }
 
           }
 
@@ -220,9 +199,8 @@ object Catalina extends Logging {
           "To modify the target stage or environment , run: export CAT_ENV=dev | demo | prod ")
       )
       .version(version)
-      .withCommands(RegisterRandomKey, RegisterKey, GenerateRandomTimestamp, CreateTimestamp, VerifyTimestamp) match {
+      .withCommands(RegisterRandomKey, RegisterKey, CreateTimestamp, VerifyTimestamp) match {
 
-        case Some(GenerateRandomTimestamp) => GenerateRandomTimestamp.run()
         case Some(RegisterRandomKey) => RegisterRandomKey.run()
         case Some(RegisterKey) => RegisterKey.run()
         case Some(CreateTimestamp) => CreateTimestamp.run()

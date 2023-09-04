@@ -15,7 +15,7 @@ public class SimpleProtocolImpl extends Protocol {
     private final PrivKey clientKey;
     private byte[] lastSignature = null;
 
-    public SimpleProtocolImpl(UUID clientUUID, PrivKey clientKey) {
+    public  SimpleProtocolImpl(UUID clientUUID, PrivKey clientKey) {
         this.clientKey = clientKey;
         this.clientUUID = clientUUID;
     }
