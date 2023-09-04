@@ -52,20 +52,14 @@
         <scala.compat.version>2.13</scala.compat.version>
         <scala-maven-plugin.version>4.5.1</scala-maven-plugin.version>
         <scalatest.version>3.2.0</scalatest.version>
-        <scala.logging.version>3.9.5</scala.logging.version>
         <scalariform.version>0.2.3</scalariform.version>
         <scalatest-maven-plugin.version>2.0.2</scalatest-maven-plugin.version>
         <typesafe-config.version>1.4.2</typesafe-config.version>
 
+        <scala.logging.version>3.9.5</scala.logging.version>
         <slf4j.api.version>2.0.9</slf4j.api.version>
         <logback-classic.version>1.4.11</logback-classic.version>
-        <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
-        <jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
-        <logstash-logback-encoder.version>5.3</logstash-logback-encoder.version>
-
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <log4j.version>2.20.0</log4j.version>
 
         <sqlite-jdbc.version>3.43.0.0</sqlite-jdbc.version>
         <quill-jdbc.version>4.6.1</quill-jdbc.version>
@@ -77,6 +71,9 @@
         <http-client.version>4.5.14</http-client.version>
         <json4s.version>4.0.1</json4s.version>
 
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -178,6 +175,16 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback-classic.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
